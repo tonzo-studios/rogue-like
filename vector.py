@@ -35,5 +35,5 @@ class Vector:
 
     def normalized(self):
         """Return a unitary vector with the same direction."""
-        norm = self.norm()
+        norm = self.norm
         return Vector(self.x / norm, self.y / norm)
