@@ -3,6 +3,22 @@
 
 from math import sqrt
 
+class Singleton(type):
+
+    """
+    Singleton metaclass.
+    """
+
+    _obj = None
+
+    def __init__(self, name, bases, namespace):
+        super().__init__(name, bases, namespace)
+
+    def __call__(self):
+        if self._obj is None:
+            self._obj = type.__call__(self)
+        return self._obj
+
 
 class Vector:
     """Represents a vector in a 2D Euclidean space.

@@ -4,6 +4,8 @@
 from abc import ABC, abstractmethod
 from math import floor
 
+from misc import Singleton
+
 
 class Entity(ABC):
 
@@ -13,15 +15,40 @@ class Entity(ABC):
         self.pos = pos
         self.type = type
 
+    def move(self, direction):
+        self.pos += direction
+
+    @abstractmethod
+    def attack(self, other): pass
+
     def __repr__(self):
         return f"{self.name} <{self.type}>@{self.pos}"
 
 
-class Character(Entity, ABC):
+class PlayerBehavior(metaclass=Singleton):
 
-    @abstractmethod
-    def __init__(self, name, pos, type):
-        super().__init__(name, pos, type)
+    def take_turn(self, actor):
+        # FIXME Placeholder
+        print(f"Player {actor.name} is taking its turn...")
+
+
+class Actor(Entity):
+
+    """
+    An actor is an entity that can perform actions.
+    """
+
+    def __init__(self, name, pos, behavior):
+        """
+        Initialize an actor object
+
+        @param name: str -> Name of the actor
+        @param pos: Vector -> Vector representing this actor's position
+        @param behavior: Behavior -> A behavior singleton implementing some
+            of this actor's actions
+        """
+        super().__init__(name, pos, 'actor')
+        self.behavior = behavior
         # base stats
         self._strength = 5
         self._constitution = 5
@@ -50,6 +77,12 @@ class Character(Entity, ABC):
         else:
             setattr(self, attr, _min)
 
+    # Actions
+    def attack(self, other):
+        # TODO: Work out differents types of damage
+        other.hp -= self.physical_dmg
+
+    # Stat properties
     @property
     def physical_dmg(self):
         return self._physical_dmg
@@ -198,26 +231,32 @@ class Character(Entity, ABC):
     def luck(self, val):
         self._generic_setter('_luck', val, 1)
 
-    @abstractmethod
-    def _compute_max_hp(self): pass
+    def _compute_max_hp(self):
+        # 25% STR, 75% CON, 100 BASE
+        hp_str = self.strength * self.level * 0.25
+        hp_con = self.constitution * self.level * 0.25
+        self.max_hp = hp_str + hp_con + 100
 
-    @abstractmethod
-    def _compute_max_mp(self): pass
+    def _compute_max_mp(self):
+        # 100% INT, 50 BASE
+        self.max_mp = self.intelligence * self.level + 50
 
-    @abstractmethod
-    def _compute_dodge_rate(self): pass
+    def _compute_ranged_damage(self):
+        # 100% DEX
+        self.ranged_dmg = self.dexterity * self.level * 0.5
 
-    @abstractmethod
-    def _compute_crit_rate(self): pass
+    def _compute_magical_damage(self):
+        # 100% INT
+        self.magical_dmg = self.intelligence * self.level * 0.33
 
-    @abstractmethod
-    def _compute_ranged_damage(self): pass
+    def _compute_physical_damage(self):
+        # 100% STR
+        self.physical_dmg = self.strength * self.level * 0.66
 
-    @abstractmethod
-    def _compute_magical_damage(self): pass
+    def _compute_dodge_rate(self):
+        # 100% DEX, assumed max level = 50
+        self.dodge_rate = (self.dexterity * self.level) / 500
 
-    @abstractmethod
-    def _compute_physical_damage(self): pass
-
-    @abstractmethod
-    def move(self, x, y): pass
+    def _compute_crit_rate(self):
+        # 100% LCK, assumed max level = 50
+        self.crit_rate = (self.luck * self.level) / 500
