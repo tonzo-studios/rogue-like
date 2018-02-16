@@ -143,6 +143,10 @@ class Dungeon:
     def compute_fov(self, pos, fov, radius, light_walls):
         self._map.compute_fov(pos.x, pos.y, fov=fov, radius=radius, light_walls=light_walls)
 
+    def compute_path(self, pos1, pos2):
+        """Return path from pos1 to pos2 in the map."""
+        return self._map.compute_path(pos1.x, pos1.y, pos2.x, pos2.y)
+
     def place_entities(self, room, max_entities_per_room, colors):
         pass
 

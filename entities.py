@@ -4,8 +4,6 @@
 from abc import ABC, abstractmethod
 from math import floor
 
-from misc import Singleton
-
 
 class Entity(ABC):
 
@@ -24,12 +22,19 @@ class Entity(ABC):
     def __repr__(self):
         return f"{self.name} <{self.type}>@{self.pos}"
 
+    def distance_to(self, dest):
+        """Return the distance this entity and the destination position."""
+        return (self.pos - dest).norm
 
-class PlayerBehavior(metaclass=Singleton):
+    def move_towards(self, dest, game_map):
+        """Move towards the destination if there's a clear path."""
+        path = game_map.compute_path(self, self.pos, dest)
+        next_tile = Vector(path[0][0], path[0][1])
+        direction = next_tile - self.pos
 
-    def take_turn(self, actor):
-        # FIXME Placeholder
-        print(f"Player {actor.name} is taking its turn...")
+        if (game_map.walkable[next_tile] and
+            not game_map.get_blocking_entity_at_location(next_tile)):
+            self.move(direction)
 
 
 class Actor(Entity):
@@ -49,6 +54,8 @@ class Actor(Entity):
         """
         super().__init__(name, pos, 'actor')
         self.behavior = behavior
+        # Give the behavior a reference to its owner entity
+        self.behavior.owner = self
         # base stats
         self._strength = 5
         self._constitution = 5
