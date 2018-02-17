@@ -15,6 +15,16 @@ class Behavior(metaclass=Singleton):
         raise NotImplementedError
 
 
+class NullBehavior(Behavior):
+
+    """
+    Do nothing.
+    """
+
+    def take_turn(self, target, game_map):
+        pass
+
+
 class BasicMonster(Behavior):
 
     """
