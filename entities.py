@@ -155,6 +155,14 @@ class Actor(Entity):
         self._generic_setter('_max_mp', val)
 
     @property
+    def mp(self):
+        return self._cur_mp
+
+    @mp.setter
+    def mp(self, val):
+        self._generic_setter('_cur_mp', val)
+
+    @property
     def max_exp(self):
         return self._max_exp
 
