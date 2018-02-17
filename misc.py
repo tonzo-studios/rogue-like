@@ -44,6 +44,10 @@ class Vector:
         """Represent the vector as a tuple."""
         return f"({self.x}, {self.y})"
 
+    def __eq__(self, other):
+        """Two vectors are equal if they have the same components."""
+        return self.x == other.x and self.y == other.y
+
     @property
     def norm(self):
         """Return the norm of the vector."""
