@@ -3,15 +3,18 @@
 
 from abc import ABC, abstractmethod
 from math import floor
+from misc import Vector
 
 
 class Entity(ABC):
 
     @abstractmethod
-    def __init__(self, name, pos, type):
+    def __init__(self, name, pos, type, char, color):
         self.name = name
         self.pos = pos
         self.type = type
+        self.char = char
+        self.color = color
 
     def move(self, direction):
         self.pos += direction
@@ -33,7 +36,7 @@ class Entity(ABC):
         direction = next_tile - self.pos
 
         if (game_map.walkable[next_tile] and
-            not game_map.get_blocking_entity_at_location(next_tile)):
+           not game_map.get_blocking_entity_at_location(next_tile)):
             self.move(direction)
 
 
@@ -43,7 +46,7 @@ class Actor(Entity):
     An actor is an entity that can perform actions.
     """
 
-    def __init__(self, name, pos, behavior):
+    def __init__(self, name, pos, behavior, char, color):
         """
         Initialize an actor object
 
@@ -52,31 +55,29 @@ class Actor(Entity):
         @param behavior: Behavior -> A behavior singleton implementing some
             of this actor's actions
         """
-        super().__init__(name, pos, 'actor')
+        super().__init__(name, pos, 'actor', char, color)
         self.behavior = behavior
-        # Give the behavior a reference to its owner entity
-        self.behavior.owner = self
         # base stats
         self._strength = 5
         self._constitution = 5
         self._intelligence = 5
         self._dexterity = 5
         self._luck = 5
+        # other stats
+        self._level = 1
+        self._exp = 0
+        self._max_exp = floor(1 + 300 * 2 ** (1/7)) / 4
+        self._gold = 100
         # computed stats
         self._max_hp = self._compute_max_hp()
         self._max_mp = self._compute_max_mp()
+        self._cur_hp = self._max_hp
+        self._cur_mp = self._max_mp
         self._physical_dmg = self._compute_physical_damage()
         self._ranged_dmg = self._compute_ranged_damage()
         self._magical_dmg = self._compute_magical_damage()
         self._crit_rate = self._compute_crit_rate()
         self._dodge_rate = self._compute_dodge_rate()
-        # other stats
-        self._cur_hp = self._max_hp
-        self._cur_mp = self._max_mp
-        self._level = 1
-        self._exp = 0
-        self._max_exp = floor(1 + 300 * 2 ** (1/7)) / 4
-        self._gold = 100
 
     def _generic_setter(self, attr, val, _min=0):
         if val >= _min:
