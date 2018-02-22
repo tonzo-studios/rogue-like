@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from enum import Enum
 from math import sqrt
 
 class Singleton(type):
@@ -69,4 +70,10 @@ class Colors:
     GROUND_DARK = (120, 120, 120)
     WALL_VISIBLE = (160, 160, 160)
     GROUND_VISIBLE = (190, 190, 190)
+
+
+class RenderPriority(Enum):
+    CORPSE = 1
+    ITEM = 2
+    ACTOR = 3
 

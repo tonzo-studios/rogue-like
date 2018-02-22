@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tdl
-
-from misc import Singleton, Vector, Colors
+from misc import Singleton, Vector, Colors, RenderPriority
 from dungeon import Dungeon
 
 
@@ -85,8 +84,9 @@ class DisplayManager(metaclass=Singleton):
                                 x, y, None, fg=None, bg=Colors.GROUND_DARK
                             )
 
-        # Draw visible entities
-        for entity in cls.cur_map.entities:
+        # Draw visible entities, sorted by render layer
+        entities_sorted = sorted(cls.cur_map.entities, key=lambda x: x.render_priority.value)
+        for entity in entities_sorted:
             if cls.cur_map.fov[entity.pos]:
                 cls.console.draw_char(
                     entity.pos.x, entity.pos.y, entity.char, entity.color,

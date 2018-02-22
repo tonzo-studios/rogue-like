@@ -4,10 +4,10 @@
 
 import tdl
 from user_input import handle_key_input
-from display_manager import Colors, DisplayManager
+from display_manager import DisplayManager
 from entities import Actor
 from behavior import NullBehavior
-from misc import Vector
+from misc import Vector, Colors
 
 
 def main():

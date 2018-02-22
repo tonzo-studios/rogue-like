@@ -4,19 +4,20 @@
 from abc import ABC, abstractmethod
 from math import floor
 from behavior import NullBehavior
-from misc import Vector, Colors
+from misc import Vector, Colors, RenderPriority
 
 
 class Entity(ABC):
 
     @abstractmethod
-    def __init__(self, name, pos, type, char, color, blocks):
+    def __init__(self, name, pos, type, char, color, blocks, render_priority):
         self.name = name
         self.pos = pos
         self.type = type
         self.char = char
         self.color = color
         self.blocks = blocks
+        self.render_priority = render_priority
 
     def move(self, direction):
         self.pos += direction
@@ -61,7 +62,8 @@ class Actor(Entity):
         @param color: Color -> The color which will be used to draw the actor's char
         @param blocks: bool -> Whether the actor blocks movement or not
         """
-        super().__init__(name, pos, 'actor', char, color, blocks=True)
+        super().__init__(name, pos, 'actor', char, color, blocks=True,
+                         render_priority=RenderPriority.ACTOR)
         self.behavior = behavior
         # base stats
         self._strength = 5
@@ -107,6 +109,7 @@ class Actor(Entity):
         self.color = Colors.RED
         self.name += " corpse"
         self.blocks = False
+        self.render_priority = RenderPriority.CORPSE
 
     # Stat properties
     @property

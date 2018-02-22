@@ -6,8 +6,7 @@ from random import randint
 from tdl.map import Map
 from entities import Actor
 from behavior import BasicMonster
-from misc import Colors
-from misc import Vector
+from misc import Colors, Vector
 
 
 class Room:
