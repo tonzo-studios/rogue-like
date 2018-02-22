@@ -193,7 +193,7 @@ class Actor(Entity):
 
     @max_exp.setter
     def max_exp(self, val):
-        self._generic_setter('_max_exp', val, self.max_exp + 1)
+        self._generic_setter('_max_exp', val, 1)
 
     @property
     def exp(self):
@@ -201,9 +201,8 @@ class Actor(Entity):
 
     @exp.setter
     def exp(self, val):
-        total = val + self.exp
-        if total >= self.max_exp:
-            val = total - self.max_exp
+        while val >= self.max_exp:
+            val -= self.max_exp
             self.level += 1
         self._generic_setter('_exp', val)
 
