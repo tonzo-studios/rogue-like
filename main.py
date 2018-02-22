@@ -6,13 +6,15 @@ import tdl
 from user_input import handle_key_input
 from display_manager import Colors, DisplayManager
 from entities import Actor
-from behavior import PlayerBehavior
+from behavior import NullBehavior
 from misc import Vector
 
 
 def main():
     # Initialize player, display_manager
-    player = Actor("Player", Vector(0, 0), PlayerBehavior(), '@', Colors.WHITE)
+    player = Actor("Player", Vector(0, 0), NullBehavior(), '@', Colors.WHITE)
+    # XXX: Give player level boost for testing purposes
+    player.level = 10
     display_manager = DisplayManager()
     display_manager.gen_map(player)
     display_manager.cur_map.entities.append(player)
@@ -22,6 +24,7 @@ def main():
         display_manager.display()
         # TODO: Add player and enemy turn states and cycle between both
         # Player turn
+        # TODO: Use game states to handle turns
         for event in tdl.event.get():
             if event.type == 'KEYDOWN':
                 user_input = event
@@ -49,7 +52,7 @@ def main():
                 target = display_manager.cur_map.get_blocking_entity_at_location(dest_pos)
                 if target:
                     # Player is moving towards an enemy. Attack it!
-                    # TODO: Implement combat
+                    player.attack(target)
                     pass
                 else:
                     player.move(direction)
@@ -60,6 +63,17 @@ def main():
 
         if fullscreen:
             tdl.set_fullscreen(not tdl.get_fullscreen())
+
+        # Enemy turn
+        for entity in display_manager.cur_map.entities:
+            entity.take_turn(player, display_manager.cur_map)
+
+        # Check for player death
+        # TODO: Handle player death as a game state
+        if player.dead:
+            # TODO: Show death screen
+            print("You died!")
+            return 0
 
 
 if __name__ == "__main__":

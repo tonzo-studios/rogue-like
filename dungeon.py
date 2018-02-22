@@ -4,6 +4,9 @@
 
 from random import randint
 from tdl.map import Map
+from entities import Actor
+from behavior import BasicMonster
+from misc import Colors
 from misc import Vector
 
 
@@ -91,7 +94,7 @@ class Dungeon:
             self.transparent[pos] = True
 
     def generate(self, room_max_count, room_min_size, room_max_size, max_entities_per_room,
-                 colors, player):
+                 player):
         """Generate a dungeon, place the player and populate it with entities."""
         # Initialize map
         for x in range(self.width):
@@ -137,7 +140,7 @@ class Dungeon:
                         self.create_v_tunnel(previous.y, center.y, previous.x)
                         self.create_h_tunnel(previous.x, center.x, center.y)
 
-                self.place_entities(new_room, max_entities_per_room, colors)
+                self.place_entities(new_room, max_entities_per_room)
                 self.rooms.append(new_room)
 
     def compute_fov(self, pos, fov, radius, light_walls):
@@ -147,8 +150,26 @@ class Dungeon:
         """Return path from pos1 to pos2 in the map."""
         return self._map.compute_path(pos1.x, pos1.y, pos2.x, pos2.y)
 
-    def place_entities(self, room, max_entities_per_room, colors):
-        pass
+    def place_entities(self, room, max_entities_per_room):
+        """Place entities in a room."""
+        entity_number = randint(0, max_entities_per_room)
+
+        for i in range(entity_number):
+            # Get a random position inside the room
+            x = randint(room.x1 + 1, room.x2 - 1)
+            y = randint(room.y1 + 1, room.y2 - 1)
+            pos = Vector(x, y)
+
+            # Check if there's already an entity there
+            if not [entity for entity in self.entities if entity.pos == pos]:
+                # Spawn a monster
+                # TODO: Change hardcoded monster into method that takes into account
+                # dungeon level, theme etc to spawn monsters using factory pattern
+                orc = Actor("Orc", pos, BasicMonster(), 'o', Colors.GREEN)
+                self.entities.append(orc)
 
     def get_blocking_entity_at_location(self, pos):
-        pass
+        for entity in self.entities:
+            if entity.pos == pos and entity.blocks:
+                return entity
+        return None

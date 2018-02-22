@@ -3,20 +3,8 @@
 
 import tdl
 
-from misc import Singleton, Vector
+from misc import Singleton, Vector, Colors
 from dungeon import Dungeon
-
-
-class Colors:
-    RED = (255, 0, 0)
-    GREEN = (0, 255, 0)
-    BLUE = (0, 0, 255)
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    WALL_DARK = (100, 100, 100)
-    GROUND_DARK = (120, 120, 120)
-    WALL_VISIBLE = (160, 160, 160)
-    GROUND_VISIBLE = (190, 190, 190)
 
 
 class DisplayManager(metaclass=Singleton):
@@ -52,7 +40,7 @@ class DisplayManager(metaclass=Singleton):
         game_map = Dungeon(cls.MAP_WIDTH, cls.MAP_HEIGHT)
         game_map.generate(
             cls.MAX_ROOMS, cls.MIN_ROOM_SIZE, cls.MAX_ROOM_SIZE,
-            cls.MAX_ENTITIES_PER_ROOM, Colors, player
+            cls.MAX_ENTITIES_PER_ROOM, player
         )
         cls.cur_map = game_map
         cls.player = player

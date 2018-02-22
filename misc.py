@@ -59,3 +59,14 @@ class Vector:
         return Vector(self.x / norm, self.y / norm)
 
 
+class Colors:
+    RED = (255, 0, 0)
+    GREEN = (0, 255, 0)
+    BLUE = (0, 0, 255)
+    BLACK = (0, 0, 0)
+    WHITE = (255, 255, 255)
+    WALL_DARK = (100, 100, 100)
+    GROUND_DARK = (120, 120, 120)
+    WALL_VISIBLE = (160, 160, 160)
+    GROUND_VISIBLE = (190, 190, 190)
+

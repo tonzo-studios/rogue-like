@@ -3,18 +3,20 @@
 
 from abc import ABC, abstractmethod
 from math import floor
-from misc import Vector
+from behavior import NullBehavior
+from misc import Vector, Colors
 
 
 class Entity(ABC):
 
     @abstractmethod
-    def __init__(self, name, pos, type, char, color):
+    def __init__(self, name, pos, type, char, color, blocks):
         self.name = name
         self.pos = pos
         self.type = type
         self.char = char
         self.color = color
+        self.blocks = blocks
 
     def move(self, direction):
         self.pos += direction
@@ -31,7 +33,7 @@ class Entity(ABC):
 
     def move_towards(self, dest, game_map):
         """Move towards the destination if there's a clear path."""
-        path = game_map.compute_path(self, self.pos, dest)
+        path = game_map.compute_path(self.pos, dest)
         next_tile = Vector(path[0][0], path[0][1])
         direction = next_tile - self.pos
 
@@ -54,8 +56,12 @@ class Actor(Entity):
         @param pos: Vector -> Vector representing this actor's position
         @param behavior: Behavior -> A behavior singleton implementing some
             of this actor's actions
+        @param char: str -> A char representing the actor's graphics as displayed
+            on the screen
+        @param color: Color -> The color which will be used to draw the actor's char
+        @param blocks: bool -> Whether the actor blocks movement or not
         """
-        super().__init__(name, pos, 'actor', char, color)
+        super().__init__(name, pos, 'actor', char, color, blocks=True)
         self.behavior = behavior
         # base stats
         self._strength = 5
@@ -69,15 +75,7 @@ class Actor(Entity):
         self._max_exp = floor(1 + 300 * 2 ** (1/7)) / 4
         self._gold = 100
         # computed stats
-        self._max_hp = self._compute_max_hp()
-        self._max_mp = self._compute_max_mp()
-        self._cur_hp = self._max_hp
-        self._cur_mp = self._max_mp
-        self._physical_dmg = self._compute_physical_damage()
-        self._ranged_dmg = self._compute_ranged_damage()
-        self._magical_dmg = self._compute_magical_damage()
-        self._crit_rate = self._compute_crit_rate()
-        self._dodge_rate = self._compute_dodge_rate()
+        self._recompute_stats()
 
     def _generic_setter(self, attr, val, _min=0):
         if val >= _min:
@@ -85,10 +83,30 @@ class Actor(Entity):
         else:
             setattr(self, attr, _min)
 
+    def recompute_stats(func):
+        """
+        Decorator that triggers a stat recomputation after the function call.
+        """
+        def wrapper(self, *args, **kwargs):
+            func(self, *args, **kwargs)
+            self._recompute_stats()
+        return wrapper
+
     # Actions
     def attack(self, other):
         # TODO: Work out differents types of damage
         other.hp -= self.physical_dmg
+
+    def take_turn(self, target, game_map):
+        self.behavior.take_turn(self, target, game_map)
+
+    def _die(self):
+        """Become a corpse."""
+        self.char = '%'
+        self.behavior = NullBehavior()
+        self.color = Colors.RED
+        self.name += " corpse"
+        self.blocks = False
 
     # Stat properties
     @property
@@ -145,7 +163,10 @@ class Actor(Entity):
 
     @hp.setter
     def hp(self, val):
-        self._generic_setter('_cur_hp', val)
+        self._generic_setter('_cur_hp', val, 0)
+        # Check if the actor died
+        if self.dead:
+            self._die()
 
     @property
     def max_mp(self):
@@ -188,6 +209,7 @@ class Actor(Entity):
         return self._level
 
     @level.setter
+    @recompute_stats
     def level(self, val):
         self._generic_setter('_level', val, 1)
 
@@ -204,75 +226,88 @@ class Actor(Entity):
         return self._strength
 
     @strength.setter
+    @recompute_stats
     def strength(self, val):
         self._generic_setter('_strength', val, 1)
-        self.physical_dmg = self._compute_physical_damage()
-        self.max_hp = self._compute_max_hp()
 
     @property
     def intelligence(self):
         return self._intelligence
 
     @intelligence.setter
+    @recompute_stats
     def intelligence(self, val):
         self._generic_setter('_intelligence', val, 1)
-        self.magical_dmg = self._compute_magical_damage()
-        self.max_mp = self._compute_max_mp()
 
     @property
     def dexterity(self):
         return self._dexterity
 
     @dexterity.setter
+    @recompute_stats
     def dexterity(self, val):
         self._generic_setter('_dexterity', val, 1)
-        self.ranged_dmg = self._compute_ranged_damage()
-        self.crit_rate = self._compute_crit_rate()
-        self.dodge_rate = self._compute_dodge_rate()
 
     @property
     def constitution(self):
         return self._constitution
 
     @constitution.setter
+    @recompute_stats
     def constitution(self, val):
         self._generic_setter('_constitution', val, 1)
-        self.max_hp = self._compute_max_hp()
 
     @property
     def luck(self):
         return self._luck
 
     @luck.setter
+    @recompute_stats
     def luck(self, val):
         self._generic_setter('_luck', val, 1)
+
+    @property
+    def dead(self):
+        return self.hp == 0
 
     def _compute_max_hp(self):
         # 25% STR, 75% CON, 100 BASE
         hp_str = self.strength * self.level * 0.25
         hp_con = self.constitution * self.level * 0.25
-        self.max_hp = hp_str + hp_con + 100
+        return hp_str + hp_con + 100
 
     def _compute_max_mp(self):
         # 100% INT, 50 BASE
-        self.max_mp = self.intelligence * self.level + 50
+        return self.intelligence * self.level + 50
 
     def _compute_ranged_damage(self):
         # 100% DEX
-        self.ranged_dmg = self.dexterity * self.level * 0.5
+        return self.dexterity * self.level * 0.5
 
     def _compute_magical_damage(self):
         # 100% INT
-        self.magical_dmg = self.intelligence * self.level * 0.33
+        return self.intelligence * self.level * 0.33
 
     def _compute_physical_damage(self):
         # 100% STR
-        self.physical_dmg = self.strength * self.level * 0.66
+        return self.strength * self.level * 0.66
 
     def _compute_dodge_rate(self):
         # 100% DEX, assumed max level = 50
-        self.dodge_rate = (self.dexterity * self.level) / 500
+        return (self.dexterity * self.level) / 500
 
     def _compute_crit_rate(self):
         # 100% LCK, assumed max level = 50
-        self.crit_rate = (self.luck * self.level) / 500
+        return (self.luck * self.level) / 500
+
+    def _recompute_stats(self):
+        """Recompute all stats that depend on other variables."""
+        self._max_hp = self._compute_max_hp()
+        self._max_mp = self._compute_max_mp()
+        self._cur_hp = self._max_hp
+        self._cur_mp = self._max_mp
+        self._physical_dmg = self._compute_physical_damage()
+        self._ranged_dmg = self._compute_ranged_damage()
+        self._magical_dmg = self._compute_magical_damage()
+        self._crit_rate = self._compute_crit_rate()
+        self._dodge_rate = self._compute_dodge_rate()
