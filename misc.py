@@ -4,6 +4,8 @@
 from enum import Enum
 from math import sqrt
 
+
+# Classes
 class Singleton(type):
 
     """
@@ -77,3 +79,10 @@ class RenderPriority(Enum):
     ITEM = 2
     ACTOR = 3
 
+# Functions
+def message(msg, color=Colors.WHITE):
+    DisplayManager.add_message(msg, color)
+
+
+# FIXME: avoid circular dependencies
+from display_manager import DisplayManager

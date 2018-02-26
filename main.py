@@ -18,10 +18,11 @@ def main():
     display_manager = DisplayManager()
     display_manager.gen_map(player)
     display_manager.cur_map.entities.append(player)
+    display_manager.add_message("Hello world!", Colors.RED)
 
     # Game loop
     while not tdl.event.is_window_closed():
-        display_manager.display()
+        display_manager.refresh()
         # TODO: Add player and enemy turn states and cycle between both
         # Player turn
         # TODO: Use game states to handle turns
