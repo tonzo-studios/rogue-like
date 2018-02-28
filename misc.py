@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
+
 from enum import Enum
 from math import sqrt
 
@@ -79,10 +81,16 @@ class RenderPriority(Enum):
     ITEM = 2
     ACTOR = 3
 
+
 # Functions
 def message(msg, color=Colors.WHITE):
     DisplayManager.add_message(msg, color)
 
 
+def get_abs_path(rel_path):
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(cwd, rel_path)
+
+
 # FIXME: avoid circular dependencies
-from display_manager import DisplayManager
+from display_manager import DisplayManager  # noqa

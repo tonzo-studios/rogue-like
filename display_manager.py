@@ -4,7 +4,7 @@
 import tdl
 import textwrap
 
-from misc import Singleton, Vector, Colors
+from misc import Singleton, Vector, Colors, get_abs_path
 from dungeon import Dungeon
 
 
@@ -38,7 +38,7 @@ class DisplayManager(metaclass=Singleton):
     game_msgs = []
 
     # TODO: give consoles a better name
-    tdl.set_font('lucida10x10_gs_tc.png', greyscale=True, altLayout=True)
+    tdl.set_font(get_abs_path('lucida10x10_gs_tc.png'), greyscale=True, altLayout=True)
     console = tdl.Console(MAP_WIDTH, MAP_HEIGHT)
     panel = tdl.Console(SCREEN_WIDTH, PANEL_HEIGHT)
     root_console = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title=GAME_TITLE,
