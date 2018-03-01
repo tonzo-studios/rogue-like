@@ -6,9 +6,17 @@ from misc import Vector
 
 
 def handle_key_input(user_input):
-    """Use tdl's user input features to react to keyborad input.
+    """
+    Use tdl's user input features to react to keyborad input.
 
-    Returns a dictionary containing an action key and a value to be parsed by the game logic.
+    Args:
+        user_input (tdl.event.KeyDown): An Event object from the tdl library
+            that contains information about the type and nature of the event.
+
+    Returns:
+        dict: Specifying the type of action to take and any parameters that
+            may be needed to carry out the action for the player.
+
     """
     key_char = user_input.char
 

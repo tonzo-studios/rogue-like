@@ -12,6 +12,13 @@ class DisplayManager(metaclass=Singleton):
 
     """
     Handles the display of entities and objects on the map.
+
+    This class is a Singleton, and as such can be called from anywhere, its
+    members and functions/methods can be accessed from anywhere.
+
+    The main "feature" of this class is the refresh() method which will trigger
+    a complete rendering of the game and the UI and blit them to the screen,
+    effectively performing an update to the latest game state
     """
     # TODO: move these to an appropriate, globally-accessible place
     SCREEN_WIDTH = 80
@@ -49,6 +56,16 @@ class DisplayManager(metaclass=Singleton):
 
     # FIXME: move me to somewhere I belong
     def gen_map(cls, player):
+        """
+        Randomly generates a new dungeon to be explored by the player.
+
+        The aspects of the dungeon are determined by the constants defined
+        above.
+
+        Args:
+            player (Actor): The player object that will interact with the
+                dungeon.
+        """
         game_map = Dungeon(cls.MAP_WIDTH, cls.MAP_HEIGHT)
         game_map.generate(
             cls.MAX_ROOMS, cls.MIN_ROOM_SIZE, cls.MAX_ROOM_SIZE,
@@ -138,12 +155,21 @@ class DisplayManager(metaclass=Singleton):
         cls.panel.draw_str(x_centered, y, text, fg=Colors.WHITE, bg=None)
 
     def _render_bars(cls):
+        """
+        Render all UI bars.
+        """
         cls.add_bar(1, 1, cls.BAR_WIDTH, 'HP', cls.player.hp,
                     cls.player.max_hp, Colors.RED, (150, 0, 0))
         cls.add_bar(1, 3, cls.BAR_WIDTH, 'MP', cls.player.mp,
                     cls.player.max_mp, Colors.BLUE, (0, 0, 150))
 
     def _recompute_fov(cls):
+        """
+        Recompute the player's FOV.
+
+        Usually needed whenever the player's representation on the map moves,
+        so that the FOV is connected to the player's actual position.
+        """
         if cls.fov_recompute:
             cls.cur_map.compute_fov(
                 cls.player.pos, cls.FOV_ALGORITHM, cls.FOV_RADIUS,
@@ -151,7 +177,9 @@ class DisplayManager(metaclass=Singleton):
             )
 
     def _render_map(cls):
-        # Draw map if necessary
+        """
+        Renders the current game map if necessary.
+        """
         if cls.fov_recompute:
             for x in range(cls.cur_map.width):
                 for y in range(cls.cur_map.height):
@@ -184,7 +212,9 @@ class DisplayManager(metaclass=Singleton):
                             )
 
     def _render_entities(cls):
-        # Draw visible entities, sorted by render layer
+        """
+        Render visible entities by render layer to the buffer console.
+        """
         entities_sorted = sorted(cls.cur_map.entities,
                                  key=lambda x: x.render_priority.value)
         for entity in entities_sorted:
@@ -195,6 +225,12 @@ class DisplayManager(metaclass=Singleton):
                 )
 
     def _display_game(cls):
+        """
+        Renders the game world and displays it in the main screen.
+
+        The game world consists of the current game map and the entities that
+        are within it, player included.
+        """
         cls._render_map()
         cls._render_entities()
         cls.root_console.blit(
@@ -202,6 +238,12 @@ class DisplayManager(metaclass=Singleton):
         )
 
     def _display_ui(cls):
+        """
+        Renders the UI and displays it in the main screen.
+
+        The UI consists of stat bars (HP, MP, EXP, ...) and of messages
+        (Dialog, Combat, ...).
+        """
         cls._render_bars()
         cls._render_messages()
         cls.root_console.blit(
@@ -209,12 +251,18 @@ class DisplayManager(metaclass=Singleton):
         )
 
     def _clear_entities(cls):
+        """
+        Clears all of the entities in the current game map from the buffer console.
+        """
         for entity in cls.cur_map.entities:
             cls.console.draw_char(
                 entity.pos.x, entity.pos.y, ' ', entity.color, bg=None
             )
 
     def _clear_all(cls):
+        """
+        Clears the whole screen (Game and UI) from the buffer console.
+        """
         cls._clear_entities()
         cls.panel.clear(fg=Colors.WHITE, bg=Colors.BLACK)
 

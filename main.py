@@ -7,7 +7,7 @@ from user_input import handle_key_input
 from display_manager import DisplayManager
 from entities import Actor
 from behavior import NullBehavior
-from misc import Vector, Colors
+from misc import Vector, Colors, message
 
 
 def main():
@@ -18,7 +18,7 @@ def main():
     display_manager = DisplayManager()
     display_manager.gen_map(player)
     display_manager.cur_map.entities.append(player)
-    display_manager.add_message("Hello world!", Colors.RED)
+    message("Hello world!", Colors.RED)
 
     # Game loop
     while not tdl.event.is_window_closed():

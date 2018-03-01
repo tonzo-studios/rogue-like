@@ -12,6 +12,12 @@ class Singleton(type):
 
     """
     Singleton metaclass.
+
+    Any class that specifies this class as its metaclass will become a Singleton,
+    i.e. it will only be instantiated once during the lifetime of the program.
+
+    This is useful for information that must be accessed project-wide without
+    creating performance issues.
     """
 
     _obj = None
@@ -30,10 +36,13 @@ class Vector:
 
     Can be used to represent position, distance, direction, etc.
     Overrides the addition and subtraction operators to perform element-wise operations.
+
+    Args:
+        x (int): x coordinate of this Vector object.
+        y (int): y coordinate of this Vector object.
     """
 
     def __init__(self, x, y):
-        """Initialize the vector's components."""
         self.x = x
         self.y = y
 
@@ -65,6 +74,21 @@ class Vector:
 
 
 class Colors:
+
+    """
+    This class is an interface to colors as RGB tuples.
+
+    This makes colors easily accessible and human-recognizable while being able
+    to directly interface with tdl's functions which require colors as tuples
+    (bar some pre-determined colors as strings).
+
+    Note:
+        If new colors must be used, it is best to add them to this class, do
+        not hardcode tuples into the game logic.
+        The only cases where not using this class can be understood are those
+        which require the color to be generated at runtime.
+    """
+
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
@@ -77,6 +101,16 @@ class Colors:
 
 
 class RenderPriority(Enum):
+    """
+    An enum representing the rendering priority for entities.
+
+    The greater the number assigned to each state, the greater the priority
+    when rendering the given entity.
+
+    Example:
+        * An Actor will be rendered over any items and any corpses.
+        * An Item will be rendered over any corpses, but not over any Actor.
+    """
     CORPSE = 1
     ITEM = 2
     ACTOR = 3
@@ -84,10 +118,36 @@ class RenderPriority(Enum):
 
 # Functions
 def message(msg, color=Colors.WHITE):
-    DisplayManager.add_message(msg, color)
+    """
+    Display a message to the message log found within the UI.
+
+    Note:
+        For more details, check DisplayManager's add_message
+
+    Args:
+        msg (str): Message to be displayed to the message log.
+        color (Colors): Color of the text that displays the message.
+    """
+    DisplayManager().add_message(msg, color)
 
 
 def get_abs_path(rel_path):
+    """
+    Generate an absolute path for a path relative to the game root directory.
+
+    Example:
+        Given '/home/user/roguelike/' as the root game directory
+
+        get_abs_path('fonts/my_font.png') will yield
+        '/home/user/roguelike/fonts/my_font.png' regardless of where the code
+        is being called from.
+
+    Args:
+        rel_path (str): Path of a resource relative to the game root directory.
+
+    Returns:
+        str: Absolute path of a resource within the game root directory.
+    """
     cwd = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(cwd, rel_path)
 

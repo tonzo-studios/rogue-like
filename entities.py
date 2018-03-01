@@ -9,6 +9,34 @@ from misc import Vector, Colors, RenderPriority
 
 class Entity(ABC):
 
+    """
+    An entity is any object that can be visually represented in the game map.
+
+    Entities are represented by a character that is displayed to the screen,
+    and a color that is applied to said character.
+
+    Note:
+        This is an abstract class and cannot be instanciated directly, it must be
+        sub-classed in order for it to be usable.
+
+    Examples:
+        * A chest containing items, traps, etc.
+        * The player character.
+        * Enemies.
+
+    Args:
+        name (str): A human-readable identifier for the entity, doesn't have to
+            be unique.
+        pos (Vector): The starting position of this entity in the current map.
+        type (str): Pseudo-type of this entity, can be one of 'player', 'npc',
+            'enemy', 'item', ...
+        char (str): How the entity will be visually displayed.
+        color (Colors): Color of the character that visually represents this entity.
+        blocks (bool): Whether this entity is blocking or not.
+        render_priority (RenderPriority): At what layer should this entity be
+            rendered.
+    """
+
     @abstractmethod
     def __init__(self, name, pos, type, char, color, blocks, render_priority):
         self.name = name
@@ -20,6 +48,12 @@ class Entity(ABC):
         self.render_priority = render_priority
 
     def move(self, direction):
+        """
+        Move this entity in the specified direction.
+
+        Args:
+            direction (Vector): Direction towards which to move this entity.
+        """
         self.pos += direction
 
     @abstractmethod
@@ -29,11 +63,26 @@ class Entity(ABC):
         return f"{self.name} <{self.type}>@{self.pos}"
 
     def distance_to(self, dest):
-        """Return the distance this entity and the destination position."""
+        """
+        Calculate the distance between this entity and the destination position.
+
+        Args:
+            dest (Vector): Vector to calculate the distance to.
+
+        Returns:
+            float: The relative distance between this entity and the destination
+                position.
+        """
         return (self.pos - dest).norm
 
     def move_towards(self, dest, game_map):
-        """Move towards the destination if there's a clear path."""
+        """
+        Move towards the destination if there's a clear path.
+
+        Args:
+            dest (Vector): Position to move to.
+            game_map (Dungeon): Current map where movement is registered.
+        """
         path = game_map.compute_path(self.pos, dest)
         next_tile = Vector(path[0][0], path[0][1])
         direction = next_tile - self.pos
@@ -46,22 +95,10 @@ class Entity(ABC):
 class Actor(Entity):
 
     """
-    An actor is an entity that can perform actions.
+    An actor is an entity that can perform actions on its own.
     """
 
     def __init__(self, name, pos, behavior, char, color):
-        """
-        Initialize an actor object
-
-        @param name: str -> Name of the actor
-        @param pos: Vector -> Vector representing this actor's position
-        @param behavior: Behavior -> A behavior singleton implementing some
-            of this actor's actions
-        @param char: str -> A char representing the actor's graphics as displayed
-            on the screen
-        @param color: Color -> The color which will be used to draw the actor's char
-        @param blocks: bool -> Whether the actor blocks movement or not
-        """
         super().__init__(name, pos, 'actor', char, color, blocks=True,
                          render_priority=RenderPriority.ACTOR)
         self.behavior = behavior
@@ -96,10 +133,33 @@ class Actor(Entity):
 
     # Actions
     def attack(self, other):
+        """
+        Attack another actor using this actor's physical damage.
+
+        Args:
+            other (Actor): Actor to attack.
+        """
         # TODO: Work out differents types of damage
         other.hp -= self.physical_dmg
 
     def take_turn(self, target, game_map):
+        """
+        Let the current actor take a turn.
+
+        A turn is defined by the usual actions that an Actor can perform
+        before other Actos can take a turn.
+
+        Examples:
+            * Moving
+            * Attacking
+            * Consuming / using items
+            * Activating mechanisms
+            * Picking up items
+
+        Args:
+            target (Entity): Entity to perform actions on, can be None.
+            game_map (Dungeon): Dungeon where the actions are performed.
+        """
         self.behavior.take_turn(self, target, game_map)
 
     def _die(self):
