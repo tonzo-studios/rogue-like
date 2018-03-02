@@ -1,0 +1,287 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>misc module &#8212; Roguelike 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="user_input module" href="user_input.html" />
+    <link rel="prev" title="display_manager module" href="display_manager.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user_input.html" title="user_input module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="display_manager.html" title="display_manager module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-misc">
+<span id="misc-module"></span><h1>misc module<a class="headerlink" href="#module-misc" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="misc.Colors">
+<em class="property">class </em><code class="descclassname">misc.</code><code class="descname">Colors</code><a class="headerlink" href="#misc.Colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class is an interface to colors as RGB tuples.</p>
+<p>This makes colors easily accessible and human-recognizable while being able
+to directly interface with tdl’s functions which require colors as tuples
+(bar some pre-determined colors as strings).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If new colors must be used, it is best to add them to this class, do
+not hardcode tuples into the game logic.
+The only cases where not using this class can be understood are those
+which require the color to be generated at runtime.</p>
+</div>
+<dl class="attribute">
+<dt id="misc.Colors.BLACK">
+<code class="descname">BLACK</code><em class="property"> = (0, 0, 0)</em><a class="headerlink" href="#misc.Colors.BLACK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.BLUE">
+<code class="descname">BLUE</code><em class="property"> = (0, 0, 255)</em><a class="headerlink" href="#misc.Colors.BLUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.GREEN">
+<code class="descname">GREEN</code><em class="property"> = (0, 255, 0)</em><a class="headerlink" href="#misc.Colors.GREEN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.GROUND_DARK">
+<code class="descname">GROUND_DARK</code><em class="property"> = (120, 120, 120)</em><a class="headerlink" href="#misc.Colors.GROUND_DARK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.GROUND_VISIBLE">
+<code class="descname">GROUND_VISIBLE</code><em class="property"> = (190, 190, 190)</em><a class="headerlink" href="#misc.Colors.GROUND_VISIBLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.RED">
+<code class="descname">RED</code><em class="property"> = (255, 0, 0)</em><a class="headerlink" href="#misc.Colors.RED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.WALL_DARK">
+<code class="descname">WALL_DARK</code><em class="property"> = (100, 100, 100)</em><a class="headerlink" href="#misc.Colors.WALL_DARK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.WALL_VISIBLE">
+<code class="descname">WALL_VISIBLE</code><em class="property"> = (160, 160, 160)</em><a class="headerlink" href="#misc.Colors.WALL_VISIBLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.Colors.WHITE">
+<code class="descname">WHITE</code><em class="property"> = (255, 255, 255)</em><a class="headerlink" href="#misc.Colors.WHITE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="misc.RenderPriority">
+<em class="property">class </em><code class="descclassname">misc.</code><code class="descname">RenderPriority</code><a class="headerlink" href="#misc.RenderPriority" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
+<p>An enum representing the rendering priority for entities.</p>
+<p>The greater the number assigned to each state, the greater the priority
+when rendering the given entity.</p>
+<p class="rubric">Example</p>
+<ul class="simple">
+<li>An Actor will be rendered over any items and any corpses.</li>
+<li>An Item will be rendered over any corpses, but not over any Actor.</li>
+</ul>
+<dl class="attribute">
+<dt id="misc.RenderPriority.ACTOR">
+<code class="descname">ACTOR</code><em class="property"> = 3</em><a class="headerlink" href="#misc.RenderPriority.ACTOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.RenderPriority.CORPSE">
+<code class="descname">CORPSE</code><em class="property"> = 1</em><a class="headerlink" href="#misc.RenderPriority.CORPSE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="misc.RenderPriority.ITEM">
+<code class="descname">ITEM</code><em class="property"> = 2</em><a class="headerlink" href="#misc.RenderPriority.ITEM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="misc.Singleton">
+<em class="property">class </em><code class="descclassname">misc.</code><code class="descname">Singleton</code><span class="sig-paren">(</span><em>name</em>, <em>bases</em>, <em>namespace</em><span class="sig-paren">)</span><a class="headerlink" href="#misc.Singleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">type</span></code></p>
+<p>Singleton metaclass.</p>
+<p>Any class that specifies this class as its metaclass will become a Singleton,
+i.e. it will only be instantiated once during the lifetime of the program.</p>
+<p>This is useful for information that must be accessed project-wide without
+creating performance issues.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="misc.Vector">
+<em class="property">class </em><code class="descclassname">misc.</code><code class="descname">Vector</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#misc.Vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents a vector in a 2D Euclidean space.</p>
+<p>Can be used to represent position, distance, direction, etc.
+Overrides the addition and subtraction operators to perform element-wise operations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> (<em>int</em>) – x coordinate of this Vector object.</li>
+<li><strong>y</strong> (<em>int</em>) – y coordinate of this Vector object.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="misc.Vector.norm">
+<code class="descname">norm</code><a class="headerlink" href="#misc.Vector.norm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the norm of the vector.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="misc.Vector.normalized">
+<code class="descname">normalized</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#misc.Vector.normalized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a unitary vector with the same direction.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="misc.get_abs_path">
+<code class="descclassname">misc.</code><code class="descname">get_abs_path</code><span class="sig-paren">(</span><em>rel_path</em><span class="sig-paren">)</span><a class="headerlink" href="#misc.get_abs_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an absolute path for a path relative to the game root directory.</p>
+<p class="rubric">Example</p>
+<p>Given ‘/home/user/roguelike/’ as the root game directory</p>
+<p>get_abs_path(‘fonts/my_font.png’) will yield
+‘/home/user/roguelike/fonts/my_font.png’ regardless of where the code
+is being called from.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rel_path</strong> (<em>str</em>) – Path of a resource relative to the game root directory.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Absolute path of a resource within the game root directory.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="misc.message">
+<code class="descclassname">misc.</code><code class="descname">message</code><span class="sig-paren">(</span><em>msg</em>, <em>color=(255</em>, <em>255</em>, <em>255)</em><span class="sig-paren">)</span><a class="headerlink" href="#misc.message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display a message to the message log found within the UI.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For more details, check DisplayManager’s add_message</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>msg</strong> (<em>str</em>) – Message to be displayed to the message log.</li>
+<li><strong>color</strong> (<a class="reference internal" href="#misc.Colors" title="misc.Colors"><em>Colors</em></a>) – Color of the text that displays the message.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="display_manager.html"
+                        title="previous chapter">display_manager module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="user_input.html"
+                        title="next chapter">user_input module</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="user_input.html" title="user_input module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="display_manager.html" title="display_manager module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Adrian Torres, Daniel Monzonis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,356 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>entities module &#8212; Roguelike 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="behavior module" href="behavior.html" />
+    <link rel="prev" title="Welcome to Roguelike’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="behavior.html" title="behavior module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Roguelike’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-entities">
+<span id="entities-module"></span><h1>entities module<a class="headerlink" href="#module-entities" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="entities.Actor">
+<em class="property">class </em><code class="descclassname">entities.</code><code class="descname">Actor</code><span class="sig-paren">(</span><em>name</em>, <em>pos</em>, <em>behavior</em>, <em>char</em>, <em>color</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Actor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#entities.Entity" title="entities.Entity"><code class="xref py py-class docutils literal"><span class="pre">entities.Entity</span></code></a></p>
+<p>An actor is an entity that can perform actions on its own.</p>
+<dl class="method">
+<dt id="entities.Actor.attack">
+<code class="descname">attack</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Actor.attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attack another actor using this actor’s physical damage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="#entities.Actor" title="entities.Actor"><em>Actor</em></a>) – Actor to attack.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.constitution">
+<code class="descname">constitution</code><a class="headerlink" href="#entities.Actor.constitution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.crit_rate">
+<code class="descname">crit_rate</code><a class="headerlink" href="#entities.Actor.crit_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.dead">
+<code class="descname">dead</code><a class="headerlink" href="#entities.Actor.dead" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.dexterity">
+<code class="descname">dexterity</code><a class="headerlink" href="#entities.Actor.dexterity" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.dodge_rate">
+<code class="descname">dodge_rate</code><a class="headerlink" href="#entities.Actor.dodge_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.exp">
+<code class="descname">exp</code><a class="headerlink" href="#entities.Actor.exp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.gold">
+<code class="descname">gold</code><a class="headerlink" href="#entities.Actor.gold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.hp">
+<code class="descname">hp</code><a class="headerlink" href="#entities.Actor.hp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.intelligence">
+<code class="descname">intelligence</code><a class="headerlink" href="#entities.Actor.intelligence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.level">
+<code class="descname">level</code><a class="headerlink" href="#entities.Actor.level" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.luck">
+<code class="descname">luck</code><a class="headerlink" href="#entities.Actor.luck" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.magical_dmg">
+<code class="descname">magical_dmg</code><a class="headerlink" href="#entities.Actor.magical_dmg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.max_exp">
+<code class="descname">max_exp</code><a class="headerlink" href="#entities.Actor.max_exp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.max_hp">
+<code class="descname">max_hp</code><a class="headerlink" href="#entities.Actor.max_hp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.max_mp">
+<code class="descname">max_mp</code><a class="headerlink" href="#entities.Actor.max_mp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.mp">
+<code class="descname">mp</code><a class="headerlink" href="#entities.Actor.mp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.physical_dmg">
+<code class="descname">physical_dmg</code><a class="headerlink" href="#entities.Actor.physical_dmg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.ranged_dmg">
+<code class="descname">ranged_dmg</code><a class="headerlink" href="#entities.Actor.ranged_dmg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="entities.Actor.recompute_stats">
+<code class="descname">recompute_stats</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Actor.recompute_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator that triggers a stat recomputation after the function call.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="entities.Actor.strength">
+<code class="descname">strength</code><a class="headerlink" href="#entities.Actor.strength" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="entities.Actor.take_turn">
+<code class="descname">take_turn</code><span class="sig-paren">(</span><em>target</em>, <em>game_map</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Actor.take_turn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Let the current actor take a turn.</p>
+<p>A turn is defined by the usual actions that an Actor can perform
+before other Actos can take a turn.</p>
+<p class="rubric">Examples</p>
+<ul class="simple">
+<li>Moving</li>
+<li>Attacking</li>
+<li>Consuming / using items</li>
+<li>Activating mechanisms</li>
+<li>Picking up items</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>target</strong> (<a class="reference internal" href="#entities.Entity" title="entities.Entity"><em>Entity</em></a>) – Entity to perform actions on, can be None.</li>
+<li><strong>game_map</strong> (<a class="reference internal" href="dungeon.html#dungeon.Dungeon" title="dungeon.Dungeon"><em>Dungeon</em></a>) – Dungeon where the actions are performed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="entities.Entity">
+<em class="property">class </em><code class="descclassname">entities.</code><code class="descname">Entity</code><span class="sig-paren">(</span><em>name</em>, <em>pos</em>, <em>type</em>, <em>char</em>, <em>color</em>, <em>blocks</em>, <em>render_priority</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">abc.ABC</span></code></p>
+<p>An entity is any object that can be visually represented in the game map.</p>
+<p>Entities are represented by a character that is displayed to the screen,
+and a color that is applied to said character.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This is an abstract class and cannot be instanciated directly, it must be
+sub-classed in order for it to be usable.</p>
+</div>
+<p class="rubric">Examples</p>
+<ul class="simple">
+<li>A chest containing items, traps, etc.</li>
+<li>The player character.</li>
+<li>Enemies.</li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) – A human-readable identifier for the entity, doesn’t have to
+be unique.</li>
+<li><strong>pos</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – The starting position of this entity in the current map.</li>
+<li><strong>type</strong> (<em>str</em>) – Pseudo-type of this entity, can be one of ‘player’, ‘npc’,
+‘enemy’, ‘item’, …</li>
+<li><strong>char</strong> (<em>str</em>) – How the entity will be visually displayed.</li>
+<li><strong>color</strong> (<a class="reference internal" href="misc.html#misc.Colors" title="misc.Colors"><em>Colors</em></a>) – Color of the character that visually represents this entity.</li>
+<li><strong>blocks</strong> (<em>bool</em>) – Whether this entity is blocking or not.</li>
+<li><strong>render_priority</strong> (<a class="reference internal" href="misc.html#misc.RenderPriority" title="misc.RenderPriority"><em>RenderPriority</em></a>) – At what layer should this entity be
+rendered.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="entities.Entity.attack">
+<code class="descname">attack</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Entity.attack" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="entities.Entity.distance_to">
+<code class="descname">distance_to</code><span class="sig-paren">(</span><em>dest</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Entity.distance_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the distance between this entity and the destination position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dest</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – Vector to calculate the distance to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>The relative distance between this entity and the destination</dt>
+<dd>position.</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="entities.Entity.move">
+<code class="descname">move</code><span class="sig-paren">(</span><em>direction</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Entity.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move this entity in the specified direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>direction</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – Direction towards which to move this entity.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="entities.Entity.move_towards">
+<code class="descname">move_towards</code><span class="sig-paren">(</span><em>dest</em>, <em>game_map</em><span class="sig-paren">)</span><a class="headerlink" href="#entities.Entity.move_towards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move towards the destination if there’s a clear path.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dest</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – Position to move to.</li>
+<li><strong>game_map</strong> (<a class="reference internal" href="dungeon.html#dungeon.Dungeon" title="dungeon.Dungeon"><em>Dungeon</em></a>) – Current map where movement is registered.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Roguelike’s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="behavior.html"
+                        title="next chapter">behavior module</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="behavior.html" title="behavior module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Roguelike’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Adrian Torres, Daniel Monzonis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+    </div>
+  </body>
+</html>

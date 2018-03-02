@@ -1,0 +1,302 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>dungeon module &#8212; Roguelike 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="display_manager module" href="display_manager.html" />
+    <link rel="prev" title="behavior module" href="behavior.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="display_manager.html" title="display_manager module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="behavior.html" title="behavior module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-dungeon">
+<span id="dungeon-module"></span><h1>dungeon module<a class="headerlink" href="#module-dungeon" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dungeon.Dungeon">
+<em class="property">class </em><code class="descclassname">dungeon.</code><code class="descname">Dungeon</code><span class="sig-paren">(</span><em>width</em>, <em>height</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Dungeon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents a dungeon / map in the game.</p>
+<p>A dungeon is a place that the player explores, it is filled with enemies,
+items, npcs, secrets. It consists of a series of Room objects interconnected
+with narrow corridors.</p>
+<p>After initialization, the dungeon is “unexplored”, i.e. the player can’t
+see the entire dungeon upon spawning. Once the player moves around and
+explores the dungeon, tiles will be revealed and will be “remembered”.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>width</strong> (<em>int</em>) – Max width of the dungeon to be generated.</li>
+<li><strong>height</strong> (<em>int</em>) – Max height of the dungeon to be generated.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dungeon.Dungeon.compute_fov">
+<code class="descname">compute_fov</code><span class="sig-paren">(</span><em>pos</em>, <em>fov</em>, <em>radius</em>, <em>light_walls</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Dungeon.compute_fov" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a FOV field from the passed-in position.</p>
+<p>The FOV field represents how many tiles ahead can a certain actor see,
+this can affect behavior such as following, attacking, etc.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pos</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – The position vector from which the FOV should be
+calculated, usually this position is occuppied by an Actor.</li>
+<li><strong>fov</strong> (<em>str</em>) – Type of FOV algorithm to be used, usually supplied by
+tdl itself.</li>
+<li><strong>radius</strong> (<em>int</em>) – How far away should the actor be able to see.</li>
+<li><strong>light_walls</strong> (<em>bool</em>) – Whether or not walls within the FOV of the
+actor should be lit up or not.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dungeon.Dungeon.compute_path">
+<code class="descname">compute_path</code><span class="sig-paren">(</span><em>pos1</em>, <em>pos2</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Dungeon.compute_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a path between pos1 and pos2 in the game map.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pos1</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – Vector representing the starting point.</li>
+<li><strong>pos2</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – Vector representing the destination.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>A list of tuples, where each tuple represents the</dt>
+<dd><p class="first last">coordinates (x, y) of the next tile in the path. The list goes
+up to the pos2.</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list(tuple)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dungeon.Dungeon.generate">
+<code class="descname">generate</code><span class="sig-paren">(</span><em>room_max_count</em>, <em>room_min_size</em>, <em>room_max_size</em>, <em>max_entities_per_room</em>, <em>player</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Dungeon.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a dungeon, place the player and populate it with entities.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>room_max_count</strong> (<em>int</em>) – Max amount of rooms to be generated for this
+particular dungeon.</li>
+<li><strong>room_min_size</strong> (<em>int</em>) – Min amount of tiles per room.</li>
+<li><strong>room_max_size</strong> (<em>int</em>) – Max amount of tiles per room.</li>
+<li><strong>max_entities_per_room</strong> (<em>int</em>) – Max amount of entities to be spawned
+per room.</li>
+<li><strong>player</strong> (<a class="reference internal" href="entities.html#entities.Actor" title="entities.Actor"><em>Actor</em></a>) – Actor object representing the player to be placed
+into the dungeon.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dungeon.Dungeon.get_blocking_entity_at_location">
+<code class="descname">get_blocking_entity_at_location</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Dungeon.get_blocking_entity_at_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if there’s a blocking entity at the specified location.</p>
+<p>A blocking entity is one that turns the tile in which it resides into
+non-walkable, effectively blocking any other entities from accessing
+and or placing themselves into that same tile.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> (<a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector"><em>Vector</em></a>) – Vector of the position to check for blocking entities.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The blocking entity if any, None otherwise.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="entities.html#entities.Entity" title="entities.Entity">Entity</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dungeon.Room">
+<em class="property">class </em><code class="descclassname">dungeon.</code><code class="descname">Room</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>width</em>, <em>height</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Room" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Represents a rectangle of walkable space.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> (<em>int</em>) – x coordinate of the top-left corner of the room.</li>
+<li><strong>y</strong> (<em>int</em>) – y coordinate of the top-left corner of the room.</li>
+<li><strong>width</strong> (<em>int</em>) – Width of the room to be created.</li>
+<li><strong>height</strong> (<em>int</em>) – Height of the room to be created.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dungeon.Room.center">
+<code class="descname">center</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Room.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the center of this room object as a Vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The center of this room object.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="misc.html#misc.Vector" title="misc.Vector">Vector</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dungeon.Room.intersect">
+<code class="descname">intersect</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Room.intersect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get whether or not this room intersects with another room.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> (<a class="reference internal" href="#dungeon.Room" title="dungeon.Room"><em>Room</em></a>) – Room to check for intersections with.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if self and other intersect, false otherwise.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="dungeon.Tilemap">
+<em class="property">class </em><code class="descclassname">dungeon.</code><code class="descname">Tilemap</code><span class="sig-paren">(</span><em>array</em><span class="sig-paren">)</span><a class="headerlink" href="#dungeon.Tilemap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A wrapper to access numpy array elements using vectors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>array</strong> (<em>list</em>) – This can actually be either a native matrix or
+a numpy matrix, depending on which one is passed-in the logic will
+be different, but the result will be the same.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="behavior.html"
+                        title="previous chapter">behavior module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="display_manager.html"
+                        title="next chapter">display_manager module</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="display_manager.html" title="display_manager module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="behavior.html" title="behavior module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Adrian Torres, Daniel Monzonis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+    </div>
+  </body>
+</html>

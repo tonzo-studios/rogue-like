@@ -1,0 +1,154 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>behavior module &#8212; Roguelike 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="dungeon module" href="dungeon.html" />
+    <link rel="prev" title="entities module" href="entities.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dungeon.html" title="dungeon module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="entities.html" title="entities module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-behavior">
+<span id="behavior-module"></span><h1>behavior module<a class="headerlink" href="#module-behavior" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="behavior.BasicMonster">
+<em class="property">class </em><code class="descclassname">behavior.</code><code class="descname">BasicMonster</code><a class="headerlink" href="#behavior.BasicMonster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#behavior.Behavior" title="behavior.Behavior"><code class="xref py py-class docutils literal"><span class="pre">behavior.Behavior</span></code></a></p>
+<p>Follow a target if visible and attack when in melee range.</p>
+<dl class="method">
+<dt id="behavior.BasicMonster.take_turn">
+<code class="descname">take_turn</code><span class="sig-paren">(</span><em>caller</em>, <em>target</em>, <em>game_map</em><span class="sig-paren">)</span><a class="headerlink" href="#behavior.BasicMonster.take_turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="behavior.Behavior">
+<em class="property">class </em><code class="descclassname">behavior.</code><code class="descname">Behavior</code><a class="headerlink" href="#behavior.Behavior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Base class for behaviors.</p>
+<dl class="method">
+<dt id="behavior.Behavior.take_turn">
+<code class="descname">take_turn</code><span class="sig-paren">(</span><em>caller</em>, <em>target</em>, <em>game_map</em><span class="sig-paren">)</span><a class="headerlink" href="#behavior.Behavior.take_turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="behavior.NullBehavior">
+<em class="property">class </em><code class="descclassname">behavior.</code><code class="descname">NullBehavior</code><a class="headerlink" href="#behavior.NullBehavior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#behavior.Behavior" title="behavior.Behavior"><code class="xref py py-class docutils literal"><span class="pre">behavior.Behavior</span></code></a></p>
+<p>Do nothing.</p>
+<dl class="method">
+<dt id="behavior.NullBehavior.take_turn">
+<code class="descname">take_turn</code><span class="sig-paren">(</span><em>caller</em>, <em>target</em>, <em>game_map</em><span class="sig-paren">)</span><a class="headerlink" href="#behavior.NullBehavior.take_turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="behavior.PlayerBehavior">
+<em class="property">class </em><code class="descclassname">behavior.</code><code class="descname">PlayerBehavior</code><a class="headerlink" href="#behavior.PlayerBehavior" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#behavior.Behavior" title="behavior.Behavior"><code class="xref py py-class docutils literal"><span class="pre">behavior.Behavior</span></code></a></p>
+<dl class="method">
+<dt id="behavior.PlayerBehavior.take_turn">
+<code class="descname">take_turn</code><span class="sig-paren">(</span><em>caller</em>, <em>target</em>, <em>game_map</em><span class="sig-paren">)</span><a class="headerlink" href="#behavior.PlayerBehavior.take_turn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="entities.html"
+                        title="previous chapter">entities module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dungeon.html"
+                        title="next chapter">dungeon module</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dungeon.html" title="dungeon module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="entities.html" title="entities module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Adrian Torres, Daniel Monzonis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+    </div>
+  </body>
+</html>

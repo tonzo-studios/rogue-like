@@ -1,0 +1,346 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>display_manager module &#8212; Roguelike 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="misc module" href="misc.html" />
+    <link rel="prev" title="dungeon module" href="dungeon.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="misc module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dungeon.html" title="dungeon module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-display_manager">
+<span id="display-manager-module"></span><h1>display_manager module<a class="headerlink" href="#module-display_manager" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="display_manager.DisplayManager">
+<em class="property">class </em><code class="descclassname">display_manager.</code><code class="descname">DisplayManager</code><a class="headerlink" href="#display_manager.DisplayManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Handles the display of entities and objects on the map.</p>
+<p>This class is a Singleton, and as such can be called from anywhere, its
+members and functions/methods can be accessed from anywhere.</p>
+<p>The main “feature” of this class is the refresh() method which will trigger
+a complete rendering of the game and the UI and blit them to the screen,
+effectively performing an update to the latest game state</p>
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.BAR_WIDTH">
+<code class="descname">BAR_WIDTH</code><em class="property"> = 20</em><a class="headerlink" href="#display_manager.DisplayManager.BAR_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.FOV_ALGORITHM">
+<code class="descname">FOV_ALGORITHM</code><em class="property"> = 'BASIC'</em><a class="headerlink" href="#display_manager.DisplayManager.FOV_ALGORITHM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.FOV_LIGHT_WALLS">
+<code class="descname">FOV_LIGHT_WALLS</code><em class="property"> = True</em><a class="headerlink" href="#display_manager.DisplayManager.FOV_LIGHT_WALLS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.FOV_RADIUS">
+<code class="descname">FOV_RADIUS</code><em class="property"> = 10</em><a class="headerlink" href="#display_manager.DisplayManager.FOV_RADIUS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.GAME_TITLE">
+<code class="descname">GAME_TITLE</code><em class="property"> = 'Tonzo Studios Roguelike'</em><a class="headerlink" href="#display_manager.DisplayManager.GAME_TITLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MAP_HEIGHT">
+<code class="descname">MAP_HEIGHT</code><em class="property"> = 44</em><a class="headerlink" href="#display_manager.DisplayManager.MAP_HEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MAP_WIDTH">
+<code class="descname">MAP_WIDTH</code><em class="property"> = 80</em><a class="headerlink" href="#display_manager.DisplayManager.MAP_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MAX_ENTITIES_PER_ROOM">
+<code class="descname">MAX_ENTITIES_PER_ROOM</code><em class="property"> = 3</em><a class="headerlink" href="#display_manager.DisplayManager.MAX_ENTITIES_PER_ROOM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MAX_ROOMS">
+<code class="descname">MAX_ROOMS</code><em class="property"> = 30</em><a class="headerlink" href="#display_manager.DisplayManager.MAX_ROOMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MAX_ROOM_SIZE">
+<code class="descname">MAX_ROOM_SIZE</code><em class="property"> = 10</em><a class="headerlink" href="#display_manager.DisplayManager.MAX_ROOM_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MIN_ROOM_SIZE">
+<code class="descname">MIN_ROOM_SIZE</code><em class="property"> = 6</em><a class="headerlink" href="#display_manager.DisplayManager.MIN_ROOM_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MSG_HEIGHT">
+<code class="descname">MSG_HEIGHT</code><em class="property"> = 5</em><a class="headerlink" href="#display_manager.DisplayManager.MSG_HEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MSG_WIDTH">
+<code class="descname">MSG_WIDTH</code><em class="property"> = 58</em><a class="headerlink" href="#display_manager.DisplayManager.MSG_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.MSG_X">
+<code class="descname">MSG_X</code><em class="property"> = 22</em><a class="headerlink" href="#display_manager.DisplayManager.MSG_X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.PANEL_HEIGHT">
+<code class="descname">PANEL_HEIGHT</code><em class="property"> = 6</em><a class="headerlink" href="#display_manager.DisplayManager.PANEL_HEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.PANEL_Y">
+<code class="descname">PANEL_Y</code><em class="property"> = 44</em><a class="headerlink" href="#display_manager.DisplayManager.PANEL_Y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.SCREEN_HEIGHT">
+<code class="descname">SCREEN_HEIGHT</code><em class="property"> = 50</em><a class="headerlink" href="#display_manager.DisplayManager.SCREEN_HEIGHT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.SCREEN_WIDTH">
+<code class="descname">SCREEN_WIDTH</code><em class="property"> = 80</em><a class="headerlink" href="#display_manager.DisplayManager.SCREEN_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="display_manager.DisplayManager.add_bar">
+<code class="descname">add_bar</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>total_w</em>, <em>name</em>, <em>val</em>, <em>maxi</em>, <em>fg_color</em>, <em>bg_color</em>, <em>text_color=(255</em>, <em>255</em>, <em>255)</em><span class="sig-paren">)</span><a class="headerlink" href="#display_manager.DisplayManager.add_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a bar to the UI in a chosen color with chosen text.</p>
+<p>Useful for displaying stuff like HP, MP, EXP and any other thing that
+the user might want to track through the UI in a min-max model.</p>
+<p>The bar’s color depends on the ratio of val to maxi, effectively
+creating a visual representation of the stat.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If the fg/bg color are the same as the text color, the text
+won’t be visible.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>x</strong> (<em>int</em>) – X coordinate relative to the container (panel console).</li>
+<li><strong>y</strong> (<em>int</em>) – Y coordinate relative to the container (panel console).</li>
+<li><strong>total_w</strong> (<em>int</em>) – Total width of the bar, in pixels.</li>
+<li><strong>name</strong> (<em>str</em>) – Name of the stat to track, to be displayed inside
+the bar in a format such as {name}: {val}/{maxi}.</li>
+<li><strong>val</strong> (<em>int</em>) – Current value of this stat.</li>
+<li><strong>maxi</strong> (<em>int</em>) – Max value of this stat.</li>
+<li><strong>fg_color</strong> (<a class="reference internal" href="misc.html#misc.Colors" title="misc.Colors"><em>Colors</em></a>) – Color of the bar when “full”.</li>
+<li><strong>bg_color</strong> (<a class="reference internal" href="misc.html#misc.Colors" title="misc.Colors"><em>Colors</em></a>) – Color of the bar when “empty”.</li>
+<li><strong>text_color</strong> (<a class="reference internal" href="misc.html#misc.Colors" title="misc.Colors"><em>Colors</em></a><em>, </em><em>optional</em>) – Color of the text inside the bar.
+Colors.WHITE by default.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="display_manager.DisplayManager.add_message">
+<code class="descname">add_message</code><span class="sig-paren">(</span><em>new_msg</em>, <em>color=(255</em>, <em>255</em>, <em>255)</em><span class="sig-paren">)</span><a class="headerlink" href="#display_manager.DisplayManager.add_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a text message to the UI log.</p>
+<p class="rubric">Examples</p>
+<ul class="simple">
+<li>Damage dealt to enemy</li>
+<li>Status effects applied</li>
+<li>Items looted</li>
+<li>Dialogues</li>
+</ul>
+<p>Messages are added to a queue and they will be rendered and discarded
+in a FIFO manner.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">/!Attention, this method shouldn’t be used through the
+DisplayManager itself, use misc.add_message instead which is a
+standalone function /!</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>new_msg</strong> (<em>str</em>) – Message to display in the UI log, no size limit
+for the string, and it will automatically be wrapped, however
+if the string is too big for the console it might get clipped.</li>
+<li><strong>color</strong> (<a class="reference internal" href="misc.html#misc.Colors" title="misc.Colors"><em>Colors</em></a>) – Color of the text to be displayed, white by
+default.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.console">
+<code class="descname">console</code><em class="property"> = &lt;Console (Width=80 Height=44)&gt;</em><a class="headerlink" href="#display_manager.DisplayManager.console" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.cur_map">
+<code class="descname">cur_map</code><em class="property"> = None</em><a class="headerlink" href="#display_manager.DisplayManager.cur_map" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.fov_recompute">
+<code class="descname">fov_recompute</code><em class="property"> = True</em><a class="headerlink" href="#display_manager.DisplayManager.fov_recompute" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.game_msgs">
+<code class="descname">game_msgs</code><em class="property"> = []</em><a class="headerlink" href="#display_manager.DisplayManager.game_msgs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="display_manager.DisplayManager.gen_map">
+<code class="descname">gen_map</code><span class="sig-paren">(</span><em>player</em><span class="sig-paren">)</span><a class="headerlink" href="#display_manager.DisplayManager.gen_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomly generates a new dungeon to be explored by the player.</p>
+<p>The aspects of the dungeon are determined by the constants defined
+above.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>player</strong> (<a class="reference internal" href="entities.html#entities.Actor" title="entities.Actor"><em>Actor</em></a>) – The player object that will interact with the
+dungeon.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.panel">
+<code class="descname">panel</code><em class="property"> = &lt;Console (Width=80 Height=6)&gt;</em><a class="headerlink" href="#display_manager.DisplayManager.panel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="display_manager.DisplayManager.refresh">
+<code class="descname">refresh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#display_manager.DisplayManager.refresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Refreshes the display after every “turn” (player action).</p>
+<dl class="docutils">
+<dt>This method will perform the following tasks in the following order:</dt>
+<dd><ol class="first last arabic simple">
+<li>Recompute the player’s FOV.</li>
+<li>Render the game map if necessary.</li>
+<li>Render any entities within the player’s FOV.</li>
+<li>Render UI elements such as stat bars, logs, etc.</li>
+<li>Display everything that’s been rendered to the screen.</li>
+<li>Prepare for the next call (flushing and clearing).</li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="display_manager.DisplayManager.root_console">
+<code class="descname">root_console</code><em class="property"> = &lt;Console (Width=80 Height=50)&gt;</em><a class="headerlink" href="#display_manager.DisplayManager.root_console" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dungeon.html"
+                        title="previous chapter">dungeon module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="misc.html"
+                        title="next chapter">misc module</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="misc.html" title="misc module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dungeon.html" title="dungeon module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Roguelike 0.2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Adrian Torres, Daniel Monzonis.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.6.
+    </div>
+  </body>
+</html>
