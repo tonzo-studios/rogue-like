@@ -32,7 +32,9 @@ class Singleton(type):
 
 
 class Vector:
-    """Represents a vector in a 2D Euclidean space.
+
+    """
+    Represents a vector in a 2D Euclidean space.
 
     Can be used to represent position, distance, direction, etc.
     Overrides the addition and subtraction operators to perform element-wise operations.
@@ -101,6 +103,7 @@ class Colors:
 
 
 class RenderPriority(Enum):
+
     """
     An enum representing the rendering priority for entities.
 

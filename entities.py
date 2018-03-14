@@ -47,18 +47,6 @@ class Entity(ABC):
         self.blocks = blocks
         self.render_priority = render_priority
 
-    def move(self, direction):
-        """
-        Move this entity in the specified direction.
-
-        Args:
-            direction (Vector): Direction towards which to move this entity.
-        """
-        self.pos += direction
-
-    @abstractmethod
-    def attack(self, other): pass
-
     def __repr__(self):
         return f"{self.name} <{self.type}>@{self.pos}"
 
@@ -74,22 +62,6 @@ class Entity(ABC):
                 position.
         """
         return (self.pos - dest).norm
-
-    def move_towards(self, dest, game_map):
-        """
-        Move towards the destination if there's a clear path.
-
-        Args:
-            dest (Vector): Position to move to.
-            game_map (Dungeon): Current map where movement is registered.
-        """
-        path = game_map.compute_path(self.pos, dest)
-        next_tile = Vector(path[0][0], path[0][1])
-        direction = next_tile - self.pos
-
-        if (game_map.walkable[next_tile] and
-           not game_map.get_blocking_entity_at_location(next_tile)):
-            self.move(direction)
 
 
 class Actor(Entity):
@@ -131,17 +103,6 @@ class Actor(Entity):
             self._recompute_stats()
         return wrapper
 
-    # Actions
-    def attack(self, other):
-        """
-        Attack another actor using this actor's physical damage.
-
-        Args:
-            other (Actor): Actor to attack.
-        """
-        # TODO: Work out differents types of damage
-        other.hp -= self.physical_dmg
-
     def take_turn(self, target, game_map):
         """
         Let the current actor take a turn.
@@ -160,7 +121,8 @@ class Actor(Entity):
             target (Entity): Entity to perform actions on, can be None.
             game_map (Dungeon): Dungeon where the actions are performed.
         """
-        self.behavior.take_turn(self, target, game_map)
+        action = self.behavior.take_turn(self, target, game_map)
+        action.execute()
 
     def _die(self):
         """Become a corpse."""
