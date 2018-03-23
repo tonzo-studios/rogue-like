@@ -21,7 +21,7 @@ class DisplayManager(metaclass=Singleton):
     effectively performing an update to the latest game state
     """
     # TODO: move these to an appropriate, globally-accessible place
-    SCREEN_WIDTH = 80
+    SCREEN_WIDTH = 100
     SCREEN_HEIGHT = 50
     MAP_WIDTH = 80
     MAP_HEIGHT = 44
@@ -42,12 +42,15 @@ class DisplayManager(metaclass=Singleton):
     MSG_WIDTH = SCREEN_WIDTH - BAR_WIDTH - 2
     MSG_HEIGHT = PANEL_HEIGHT - 1
 
+    BACKPACK_WIDTH = 20
+
     game_msgs = []
 
     # TODO: give consoles a better name
     tdl.set_font(get_abs_path('lucida10x10_gs_tc.png'), greyscale=True, altLayout=True)
     console = tdl.Console(MAP_WIDTH, MAP_HEIGHT)
     panel = tdl.Console(SCREEN_WIDTH, PANEL_HEIGHT)
+    backpack = tdl.Console(BACKPACK_WIDTH, SCREEN_HEIGHT)
     root_console = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title=GAME_TITLE,
                             fullscreen=False)
 
@@ -114,6 +117,14 @@ class DisplayManager(metaclass=Singleton):
         for y, msg in enumerate(cls.game_msgs):
             line, color = msg
             cls.panel.draw_str(cls.MSG_X, y + 1, line, color, None)
+
+    def _render_backpack(cls):
+        for y, item in enumerate(cls.player.backpack.contents):
+            cls.backpack.draw_str(
+                2, y + 1,
+                f"{cls.player.backpack.contents[item]} of {item.name}",
+                Colors.WHITE, None
+            )
 
     def add_bar(cls, x, y, total_w, name, val, maxi, fg_color, bg_color,
                 text_color=Colors.WHITE):
@@ -246,8 +257,12 @@ class DisplayManager(metaclass=Singleton):
         """
         cls._render_bars()
         cls._render_messages()
+        cls._render_backpack()
         cls.root_console.blit(
             cls.panel, 0, cls.PANEL_Y, cls.SCREEN_WIDTH, cls.PANEL_HEIGHT, 0, 0
+        )
+        cls.root_console.blit(
+            cls.backpack, cls.MAP_WIDTH, 0, cls.BACKPACK_WIDTH, cls.SCREEN_HEIGHT, 0, 0
         )
 
     def _clear_entities(cls):

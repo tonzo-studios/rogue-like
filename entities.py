@@ -3,8 +3,9 @@
 
 from abc import ABC, abstractmethod
 from math import floor
+from collections import OrderedDict
 from behavior import NullBehavior
-from misc import Vector, Colors, RenderPriority
+from misc import Colors, RenderPriority, Singleton, message
 
 
 class Entity(ABC):
@@ -64,6 +65,109 @@ class Entity(ABC):
         return (self.pos - dest).norm
 
 
+class Item(Entity):
+
+    """
+    Represents an item in the game world and/or in the backpack.
+
+    An item can be dropped by a monster, found randomly from the game world,
+    can be picked up and/or given to the player.
+
+    Args:
+        effect (Command): Triggered on item use, defaults to None.
+        weight (float): Weight of the item, defaults to 1.0
+    """
+
+    def __init__(self, name, pos, char, color, blocks=False, effect=None, weight=1.0):
+        super().__init__(name, pos, 'item', char, color, blocks, RenderPriority.ITEM)
+        self.behavior = NullBehavior()
+        self.effect = effect
+        self.weight = weight
+
+    def use(self, target):
+        """
+        Use the item upon the specified target.
+
+        Args:
+            target (Actor): The actor that will be affected by the item's effect.
+
+        Returns:
+            bool: True if the effect was successfully used, False otherwise.
+        """
+        if self.effect:
+            self.effect(target)
+            return True
+        else:
+            message("Nothing happened...")
+        return False
+
+    def take_turn(self, target, game_map):
+        self.behavior.take_turn(None, None, None)
+
+
+class Backpack(metaclass=Singleton):
+
+    """
+    The backpack is a singleton that contains all of the items collected by the player.
+
+    Items can be added, removed and used by the player.
+
+    When adding items it will check if the item already exists in the backpack and will increase
+    the quantity counter if it does, it will add the item if it doesn't exist and there's
+    enough free space in the backpack.
+    """
+
+    contents = OrderedDict()
+    cur_weight = 0.0
+    max_weight = 100.0
+
+    def _search(cls, name):
+        for item in cls.contents:
+            if item.name == name:
+                return item
+
+    def add(cls, item, qty):
+        """
+        Add the specified qty of item to the backpack's contents.
+
+        Args:
+            item (Item): Item object to be added to the contents of the backpack.
+            qty (int): Amount of the item to be added to the contents of the backpack.
+        """
+        c_item = cls._search(item.name)
+        if c_item and c_item.weight * qty + cls.cur_weight <= cls.max_weight:
+            cls.contents[c_item] += qty
+            cls.cur_weight += c_item.weight * qty
+        else:
+            if item.weight * qty + cls.cur_weight <= cls.max_weight:
+                cls.contents[item] = qty
+                cls.cur_weight += item.weight * qty
+
+    def use(cls, i, target):
+        """
+        Try to use the item at position i upon the specified target.
+
+        If the usage is valid:
+            * The item quantity is decreased by one if there's more than one of the item.
+            * The item is deleted from the backpack's contents.
+        Else:
+            Nothing happens.
+
+        Args:
+            i (int): Index of the item to be used.
+            target (Actor): Actor upon which to use the item's effect if any.
+        """
+        item = list(cls.contents)[i]
+        used = item.use(target)
+
+        if used:
+            if cls.contents[item] == 1:
+                del cls.contents[item]
+            else:
+                cls.contents[item] -= 1
+            cls.cur_weight -= item.weight
+
+
 class Actor(Entity):
 
     """
@@ -85,6 +189,9 @@ class Actor(Entity):
         self._exp = 0
         self._max_exp = floor(1 + 300 * 2 ** (1/7)) / 4
         self._gold = 100
+        # technically all actors will have a backpack, but since it's a singleton
+        # and only player has access to it, it doesn't matter.
+        self.backpack = Backpack()
         # computed stats
         self._recompute_stats()
 

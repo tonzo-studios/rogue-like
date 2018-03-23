@@ -4,7 +4,7 @@
 
 from random import randint
 from tdl.map import Map
-from entities import Actor
+from entities import Actor, Item
 from behavior import BasicMonster
 from misc import Colors, Vector
 
@@ -254,8 +254,12 @@ class Dungeon:
                 # Spawn a monster
                 # TODO: Change hardcoded monster into method that takes into account
                 # dungeon level, theme etc to spawn monsters using factory pattern
-                orc = Actor("Orc", pos, BasicMonster(), 'o', Colors.GREEN)
-                self.entities.append(orc)
+                if randint(0, 1) == 1:
+                    ent = Actor("Orc", pos, BasicMonster(), 'o', Colors.GREEN)
+                else:
+                    ent = Item("Candy", pos, 'd', Colors.BLUE, False)
+
+                self.entities.append(ent)
 
     def get_blocking_entity_at_location(self, pos):
         """

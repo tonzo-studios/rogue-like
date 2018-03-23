@@ -94,5 +94,9 @@ class ActionManager(metaclass=Singleton):
             # Exit game
             return cmd.ExitCommand()
 
+        elif cls.user_input.char == 'g':
+            # Pickup item
+            return cmd.PickupCommand(cls.player, cls.display_manager.cur_map)
+
         else:
             return False

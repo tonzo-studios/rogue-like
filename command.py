@@ -108,3 +108,25 @@ class ExitCommand(Command):
     def execute(self):
         # TODO: Find more elegant way to terminate the program
         exit()
+
+
+class PickupCommand(Command):
+
+    """
+    Pickup an item at the player's current position.
+
+    Args:
+        player (Actor): The player.
+        game_map (Dungeon): Current map where the player and other entities are located.
+    """
+
+    def __init__(self, player, game_map):
+        self.player = player
+        self.game_map = game_map
+
+    def execute(self):
+        loot = [e for e in self.game_map.entities if e.pos == self.player.pos and e != self.player]
+
+        if loot:
+            self.player.backpack.add(loot[0], 1)
+            self.game_map.entities.remove(loot[0])
