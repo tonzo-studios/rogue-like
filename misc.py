@@ -19,16 +19,14 @@ class Singleton(type):
     This is useful for information that must be accessed project-wide without
     creating performance issues.
     """
+    # from https://stackoverflow.com/q/6760685
 
-    _obj = None
+    _instances = {}
 
-    def __init__(self, name, bases, namespace):
-        super().__init__(name, bases, namespace)
-
-    def __call__(self):
-        if self._obj is None:
-            self._obj = type.__call__(self)
-        return self._obj
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
 
 
 class Vector:
@@ -131,7 +129,8 @@ def message(msg, color=Colors.WHITE):
         msg (str): Message to be displayed to the message log.
         color (Colors): Color of the text that displays the message.
     """
-    DisplayManager().add_message(msg, color)
+    import display_manager
+    display_manager.DisplayManager().add_message(msg, color)
 
 
 def get_abs_path(rel_path):
@@ -153,7 +152,3 @@ def get_abs_path(rel_path):
     """
     cwd = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(cwd, rel_path)
-
-
-# FIXME: avoid circular dependencies
-from display_manager import DisplayManager  # noqa
