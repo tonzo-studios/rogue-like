@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABC, abstractmethod
-from math import floor
 from collections import OrderedDict
+from math import floor
+
 from behavior import NullBehavior
-from misc import Colors, RenderPriority, Singleton, message
+from misc import Colors, RenderPriority, Singleton, message, Vector
 
 
 class Entity(ABC):
-
     """
     An entity is any object that can be visually represented in the game map.
 
@@ -51,6 +51,16 @@ class Entity(ABC):
     def __repr__(self):
         return f"{self.name} <{self.type}>@{self.pos}"
 
+    def move(self, direction):
+        """
+        Move this entity in the specified direction.
+
+        Args:
+            direction (Vector): Direction towards which to move this entity.
+       """
+
+        self.pos += direction
+
     def distance_to(self, dest):
         """
         Calculate the distance between this entity and the destination position.
@@ -64,9 +74,24 @@ class Entity(ABC):
         """
         return (self.pos - dest).norm
 
+    def move_towards(self, dest, game_map):
+        """
+        Move towards the destination if there's a clear path.
+
+        Args:
+            dest (Vector): Position to move to.
+            game_map (Dungeon): Current map where movement is registered.
+    """
+
+        path = game_map.compute_path(self.pos, dest)
+        next_tile = Vector(path[0][0], path[0][1])
+        direction = next_tile - self.pos
+
+        if game_map.walkable[next_tile] and not game_map.get_blocking_entity_at_location(next_tile):
+            self.move(direction)
+
 
 class Item(Entity):
-
     """
     Represents an item in the game world and/or in the backpack.
 
@@ -106,7 +131,6 @@ class Item(Entity):
 
 
 class Backpack(metaclass=Singleton):
-
     """
     The backpack is a singleton that contains all of the items collected by the player.
 
@@ -169,7 +193,6 @@ class Backpack(metaclass=Singleton):
 
 
 class Actor(Entity):
-
     """
     An actor is an entity that can perform actions on its own.
     """
@@ -187,7 +210,7 @@ class Actor(Entity):
         # other stats
         self._level = 1
         self._exp = 0
-        self._max_exp = floor(1 + 300 * 2 ** (1/7)) / 4
+        self._max_exp = floor(1 + 300 * 2 ** (1 / 7)) / 4
         self._gold = 100
         # technically all actors will have a backpack, but since it's a singleton
         # and only player has access to it, it doesn't matter.
@@ -205,10 +228,23 @@ class Actor(Entity):
         """
         Decorator that triggers a stat recomputation after the function call.
         """
+
         def wrapper(self, *args, **kwargs):
             func(self, *args, **kwargs)
             self._recompute_stats()
+
         return wrapper
+
+    def attack(self, other):
+        """
+        Attack another actor using this actor's physical damage.
+
+        Args:
+            other (Actor): Actor to attack.
+        """
+
+        # TODO: Work out differents types of damage
+        other.hp -= self.physical_dmg
 
     def take_turn(self, target, game_map):
         """
@@ -228,8 +264,7 @@ class Actor(Entity):
             target (Entity): Entity to perform actions on, can be None.
             game_map (Dungeon): Dungeon where the actions are performed.
         """
-        action = self.behavior.take_turn(self, target, game_map)
-        action.execute()
+        self.behavior.take_turn(self, target, game_map)
 
     def _die(self):
         """Become a corpse."""

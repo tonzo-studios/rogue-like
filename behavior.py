@@ -3,11 +3,9 @@
 
 
 from misc import Singleton
-import command as cmd
 
 
 class Behavior(metaclass=Singleton):
-
     """
     Base class for behaviors.
     """
@@ -17,17 +15,15 @@ class Behavior(metaclass=Singleton):
 
 
 class NullBehavior(Behavior):
-
     """
     Do nothing.
     """
 
     def take_turn(self, caller, target, game_map):
-        return cmd.Command()
+        pass
 
 
 class BasicMonster(Behavior):
-
     """
     Follow a target if visible and attack when in melee range.
     """
@@ -40,12 +36,8 @@ class BasicMonster(Behavior):
         if game_map.fov[caller.pos]:
             if caller.distance_to(target.pos) >= 2:
                 # Target is too far to attack, move towards it
-                return cmd.MoveTowardsCommand(caller, target.pos, game_map)
+                caller.move_towards(target.pos, game_map)
             else:
                 # Attack the target
                 if target.type == 'actor':
-                    return cmd.AttackCommand(caller, target)
-        else:
-            # Do nothing
-            # TODO: Make enemies move randomly when player is not in line of sight
-            return cmd.Command()
+                    caller.attack(target)

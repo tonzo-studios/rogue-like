@@ -3,10 +3,12 @@
 
 
 import tdl
+
 from action_manager import ActionManager
-from display_manager import DisplayManager
-from entities import Actor
 from behavior import NullBehavior
+from display_manager import DisplayManager
+from dungeon import Dungeon
+from entities import Actor
 from misc import Vector, Colors, message
 
 
@@ -16,17 +18,16 @@ def main():
     # XXX: Give player level boost for testing purposes
     player.level = 10
 
+    # Initialize Dungeon
+    dungeon = Dungeon()
+    dungeon.initialize(player)
+
     # Initialize Display Manager
-    display_manager = DisplayManager()
-    display_manager.gen_map(player)
-    display_manager.cur_map.entities.append(player)
+    display_manager = DisplayManager(player, dungeon)
     message("Hello world!", Colors.RED)
 
     # Initialize Action Manager
-    action_manager = ActionManager()
-    action_manager.player = player
-    action_manager.display_manager = display_manager
-    action_manager.update(display_manager.cur_map)
+    action_manager = ActionManager(player, dungeon)
 
     # Game loop
     while not tdl.event.is_window_closed():
@@ -36,16 +37,12 @@ def main():
         # TODO: Use game states to handle turns
 
         action_manager.get_user_input()
-        action = action_manager.handle_key_input()
-
-        if not action:
+        if action_manager.handle_key_input() is False:
             continue
 
-        action.execute()
-
         # Enemy turn
-        for entity in display_manager.cur_map.entities:
-            entity.take_turn(player, display_manager.cur_map)
+        for entity in dungeon.current_level.entities:
+            entity.take_turn(player, dungeon.current_level)
 
         # Check for player death
         # TODO: Handle player death as a game state

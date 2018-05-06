@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import tdl
-import command as cmd
+
 from misc import Singleton, Vector
 
 
 class ActionManager(metaclass=Singleton):
-
     """
     Handles user input and the requests it produces in the form of actions.
 
@@ -16,7 +15,7 @@ class ActionManager(metaclass=Singleton):
 
     Args:
         player (Actor): A reference to the player actor.
-        game_map (Dungeon): A reference to the current map.
+        dungeon (Dungeon): A reference to the game's dungeon.
         display_manager (DisplayManager): A reference to the game's display manager.
             It is needed because some player actions may trigger a FOV recompute.
         user_input (tdl.event.KeyDown): An Event object from the tdl library
@@ -24,11 +23,11 @@ class ActionManager(metaclass=Singleton):
 
     """
 
-    player = game_map = user_input = display_manager = None
+    player = dungeon = user_input = display_manager = None
 
-    # TODO: use observer pattern to call this when game map changes
-    def update(cls, game_map):
-        cls.game_map = game_map
+    def __init__(cls, player, dungeon):
+        cls.player = player
+        cls.dungeon = dungeon
 
     def get_user_input(cls):
         """
@@ -46,8 +45,7 @@ class ActionManager(metaclass=Singleton):
         Use tdl's user input features to react to keyborad input.
 
         Returns:
-            A command representing the action that the user is going to
-            perform, or False if there was no valid input.
+            True if an action that consumes a turn was performed by the player, False otherwise.
         """
         if not cls.user_input:
             return False
@@ -77,26 +75,61 @@ class ActionManager(metaclass=Singleton):
 
         # Check if the action is a movement action
         if move_direction is not None:
-            dest_pos = cls.player.pos + move_direction
-            if cls.game_map.walkable[dest_pos]:
-                target = cls.game_map.get_blocking_entity_at_location(dest_pos)
-                # If the player is moving towards an enemy, attack it
-                if target:
-                    return cmd.AttackCommand(cls.player, target)
-                else:
-                    return cmd.MoveCommand(cls.player, move_direction, cls.display_manager)
+            return cls.movement_action(move_direction)
 
         if cls.user_input.key == 'ENTER' and cls.user_input.alt:
             # Alt+Enter: toggle fullscreen
-            return cmd.FullscreenCommand()
+            tdl.set_fullscreen(not tdl.get_fullscreen())
+            return False
 
         elif cls.user_input.key == 'ESCAPE':
             # Exit game
-            return cmd.ExitCommand()
+            # TODO: Find more elegant way to terminate the program
+            exit()
 
         elif cls.user_input.char == 'g':
-            # Pickup item
-            return cmd.PickupCommand(cls.player, cls.display_manager.cur_map)
+            return cls.pickup_action()
 
         else:
             return False
+
+    def movement_action(cls, move_direction):
+        """
+        Player tries to perform a movement action in the given direction.
+        If the tile he's moving to is unoccupied, he will move to it.
+        If it's occupied by another actor, the player will attack it instead.
+
+        Args:
+            move_direction (Vector): Direction the player is moving to. Should be a unit vector representing a
+                horizontal, vertical or diagonal direction.
+
+        Returns:
+            True, since movement and attack actions always consume a turn.
+        """
+        dest_pos = cls.player.pos + move_direction
+        if cls.dungeon.current_level.walkable[dest_pos]:
+            target = cls.dungeon.current_level.get_blocking_entity_at_location(dest_pos)
+            # If the player is moving towards an enemy, attack it
+            if target:
+                cls.player.attack(target)
+            else:
+                cls.player.move(move_direction)
+                # Player moved, recompute FOV
+                cls.dungeon.recompute_fov()
+        return True
+
+    def pickup_action(cls):
+        """
+        The player attempts to grab an item at the position he's currently at.
+        If successful, the loot will be added to the player's backpack.
+
+        Returns:
+            True if the player picked something up, False otherwise.
+        """
+        loot = [e for e in cls.dungeon.current_level.entities if e.pos == cls.player.pos and e != cls.player]
+
+        if loot:
+            cls.player.backpack.add(loot[0], 1)
+            cls.dungeon.current_level.entities.remove(loot[0])
+            return True
+        return False

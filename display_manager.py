@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import tdl
 import textwrap
 
+import tdl
+
 from misc import Singleton, Vector, Colors, get_abs_path
-from dungeon import Dungeon
 
 
 class DisplayManager(metaclass=Singleton):
-
     """
     Handles the display of entities and objects on the map.
 
@@ -23,16 +22,7 @@ class DisplayManager(metaclass=Singleton):
     # TODO: move these to an appropriate, globally-accessible place
     SCREEN_WIDTH = 100
     SCREEN_HEIGHT = 50
-    MAP_WIDTH = 80
-    MAP_HEIGHT = 44
     GAME_TITLE = "Tonzo Studios Roguelike"
-    MAX_ROOMS = 30
-    MIN_ROOM_SIZE = 6
-    MAX_ROOM_SIZE = 10
-    MAX_ENTITIES_PER_ROOM = 3
-    FOV_ALGORITHM = "BASIC"
-    FOV_LIGHT_WALLS = True
-    FOV_RADIUS = 10
 
     BAR_WIDTH = 20
     PANEL_HEIGHT = 6
@@ -46,36 +36,20 @@ class DisplayManager(metaclass=Singleton):
 
     game_msgs = []
 
-    # TODO: give consoles a better name
-    tdl.set_font(get_abs_path('lucida10x10_gs_tc.png'), greyscale=True, altLayout=True)
-    console = tdl.Console(MAP_WIDTH, MAP_HEIGHT)
-    panel = tdl.Console(SCREEN_WIDTH, PANEL_HEIGHT)
-    backpack = tdl.Console(BACKPACK_WIDTH, SCREEN_HEIGHT)
-    root_console = tdl.init(SCREEN_WIDTH, SCREEN_HEIGHT, title=GAME_TITLE,
-                            fullscreen=False)
-
-    cur_map = None
-    fov_recompute = True
-
-    # FIXME: move me to somewhere I belong
-    def gen_map(cls, player):
-        """
-        Randomly generates a new dungeon to be explored by the player.
-
-        The aspects of the dungeon are determined by the constants defined
-        above.
-
-        Args:
-            player (Actor): The player object that will interact with the
-                dungeon.
-        """
-        game_map = Dungeon(cls.MAP_WIDTH, cls.MAP_HEIGHT)
-        game_map.generate(
-            cls.MAX_ROOMS, cls.MIN_ROOM_SIZE, cls.MAX_ROOM_SIZE,
-            cls.MAX_ENTITIES_PER_ROOM, player
-        )
-        cls.cur_map = game_map
+    def __init__(cls, player, dungeon):
+        # TODO: give consoles a better name
+        tdl.set_font(get_abs_path('lucida10x10_gs_tc.png'), greyscale=True, altLayout=True)
+        # TODO: Instead of using the level width, use views with fixed width
+        # FIXME: Since we don't have views yet, hardcode level width and height
+        # Initialize consoles
+        cls.console = tdl.Console(80, 40)
+        cls.panel = tdl.Console(cls.SCREEN_HEIGHT, cls.PANEL_HEIGHT)
+        cls.backpack = tdl.Console(cls.BACKPACK_WIDTH, cls.SCREEN_HEIGHT)
+        cls.root_console = tdl.init(cls.SCREEN_WIDTH, cls.SCREEN_HEIGHT, title=cls.GAME_TITLE,
+                                    fullscreen=False)
+        # Initialize references to other needed objects
         cls.player = player
+        cls.dungeon = dungeon
 
     def add_message(cls, new_msg, color=Colors.WHITE):
         """
@@ -162,8 +136,8 @@ class DisplayManager(metaclass=Singleton):
 
         # FIXME: make val be an int or a properly truncated float, don't coerce
         text = f"{name}: {int(val)}/{maxi}"
-        x_centered = x + (total_w - len(text))//2
-        cls.panel.draw_str(x_centered, y, text, fg=Colors.WHITE, bg=None)
+        x_centered = x + (total_w - len(text)) // 2
+        cls.panel.draw_str(x_centered, y, text, fg=text_color, bg=None)
 
     def _render_bars(cls):
         """
@@ -174,31 +148,21 @@ class DisplayManager(metaclass=Singleton):
         cls.add_bar(1, 3, cls.BAR_WIDTH, 'MP', cls.player.mp,
                     cls.player.max_mp, Colors.BLUE, (0, 0, 150))
 
-    def _recompute_fov(cls):
-        """
-        Recompute the player's FOV.
-
-        Usually needed whenever the player's representation on the map moves,
-        so that the FOV is connected to the player's actual position.
-        """
-        if cls.fov_recompute:
-            cls.cur_map.compute_fov(
-                cls.player.pos, cls.FOV_ALGORITHM, cls.FOV_RADIUS,
-                cls.FOV_LIGHT_WALLS
-            )
-
     def _render_map(cls):
         """
         Renders the current game map if necessary.
         """
-        if cls.fov_recompute:
-            for x in range(cls.cur_map.width):
-                for y in range(cls.cur_map.height):
+        cur_map = cls.dungeon.current_level
+        if cls.dungeon.fov_recomputed:
+            cls.dungeon.fov_recomputed = False
+            
+            for x in range(cur_map.width):
+                for y in range(cur_map.height):
                     pos = Vector(x, y)
-                    wall = not cls.cur_map.transparent[pos]
+                    wall = not cur_map.transparent[pos]
 
                     # If position is visible, draw a bright tile
-                    if cls.cur_map.fov[pos]:
+                    if cur_map.fov[pos]:
                         if wall:
                             cls.console.draw_char(
                                 x, y, None, fg=None, bg=Colors.WALL_VISIBLE
@@ -209,10 +173,10 @@ class DisplayManager(metaclass=Singleton):
                             )
                         # Tiles in FOV will be remembered after they get out
                         # of sight, out of mind :^)
-                        cls.cur_map.explored[pos] = True
+                        cur_map.explored[pos] = True
 
                     # Position is not visible, but has been explored before
-                    elif cls.cur_map.explored[pos]:
+                    elif cur_map.explored[pos]:
                         if wall:
                             cls.console.draw_char(
                                 x, y, None, fg=None, bg=Colors.WALL_DARK
@@ -226,10 +190,10 @@ class DisplayManager(metaclass=Singleton):
         """
         Render visible entities by render layer to the buffer console.
         """
-        entities_sorted = sorted(cls.cur_map.entities,
+        entities_sorted = sorted(cls.dungeon.current_level.entities,
                                  key=lambda x: x.render_priority.value)
         for entity in entities_sorted:
-            if cls.cur_map.fov[entity.pos]:
+            if cls.dungeon.current_level.fov[entity.pos]:
                 cls.console.draw_char(
                     entity.pos.x, entity.pos.y, entity.char, entity.color,
                     bg=None
@@ -261,15 +225,16 @@ class DisplayManager(metaclass=Singleton):
         cls.root_console.blit(
             cls.panel, 0, cls.PANEL_Y, cls.SCREEN_WIDTH, cls.PANEL_HEIGHT, 0, 0
         )
+        # TODO: Instead of using the level width, use views with fixed width
         cls.root_console.blit(
-            cls.backpack, cls.MAP_WIDTH, 0, cls.BACKPACK_WIDTH, cls.SCREEN_HEIGHT, 0, 0
+            cls.backpack, cls.dungeon.LEVEL_WIDTH, 0, cls.BACKPACK_WIDTH, cls.SCREEN_HEIGHT, 0, 0
         )
 
     def _clear_entities(cls):
         """
         Clears all of the entities in the current game map from the buffer console.
         """
-        for entity in cls.cur_map.entities:
+        for entity in cls.dungeon.current_level.entities:
             cls.console.draw_char(
                 entity.pos.x, entity.pos.y, ' ', entity.color, bg=None
             )
@@ -293,9 +258,7 @@ class DisplayManager(metaclass=Singleton):
             5. Display everything that's been rendered to the screen.
             6. Prepare for the next call (flushing and clearing).
         """
-        cls._recompute_fov()
         cls._display_game()
         cls._display_ui()
         tdl.flush()
         cls._clear_all()
-        cls.fov_recompute = False

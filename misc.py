@@ -9,7 +9,6 @@ from math import sqrt
 
 # Classes
 class Singleton(type):
-
     """
     Singleton metaclass.
 
@@ -30,7 +29,6 @@ class Singleton(type):
 
 
 class Vector:
-
     """
     Represents a vector in a 2D Euclidean space.
 
@@ -74,7 +72,6 @@ class Vector:
 
 
 class Colors:
-
     """
     This class is an interface to colors as RGB tuples.
 
@@ -101,7 +98,6 @@ class Colors:
 
 
 class RenderPriority(Enum):
-
     """
     An enum representing the rendering priority for entities.
 

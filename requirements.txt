@@ -1,9 +1,4 @@
-attrs==17.4.0
-cffi==1.11.4
-numpy==1.14.0
-pluggy==0.6.0
-py==1.5.2
+cffi==1.11.5
+numpy==1.14.3
 pycparser==2.18
-pytest==3.4.0
-six==1.11.0
-tdl==4.3.0
+tdl==4.4.0
