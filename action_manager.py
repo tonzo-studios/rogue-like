@@ -126,7 +126,7 @@ class ActionManager(metaclass=Singleton):
         Returns:
             True if the player picked something up, False otherwise.
         """
-        loot = [e for e in cls.dungeon.current_level.entities if e.pos == cls.player.pos and e != cls.player]
+        loot = [e for e in cls.dungeon.current_level.entities if e.pos == cls.player.pos and e.type == 'item']
 
         if loot:
             cls.player.backpack.add(loot[0], 1)
