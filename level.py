@@ -197,6 +197,7 @@ class Level:
                 if not self.rooms:
                     # First room, position the player
                     player.pos = center
+                    player.game_map = self
                     self.entities.append(player)
                     # Place up stairs at the same position as the player
                     self.up_stairs = player.pos
@@ -249,7 +250,19 @@ class Level:
                 coordinates (x, y) of the next tile in the path. The list goes
                 up to the pos2.
         """
-        return self._map.compute_path(pos1.x, pos1.y, pos2.x, pos2.y)
+        # Get current walkable state
+        pos1_walkable = self.walkable[pos1]
+        pos2_walkable = self.walkable[pos2]
+        # Set origin and destination to walkable for the actual computation to work
+        self.walkable[pos1] = self.walkable[pos2] = True
+        # Compute path
+        path = self._map.compute_path(pos1.x, pos1.y, pos2.x, pos2.y)
+        # Convert path to vectors
+        path = [Vector(x, y) for x, y in [tile for tile in path]]
+        # Revert origin and destination walkable state to its original state
+        self.walkable[pos1] = pos1_walkable
+        self.walkable[pos2] = pos2_walkable
+        return path
 
     def _place_entities(self, room, max_entities_per_room):
         """
@@ -274,9 +287,9 @@ class Level:
                 # TODO: Change hardcoded monster into method that takes into account
                 # dungeon level, theme etc to spawn monsters using factory pattern
                 if randint(0, 1) == 1:
-                    ent = Actor("Orc", pos, BasicMonster(), 'o', Colors.GREEN)
+                    ent = Actor("Orc", pos, BasicMonster(), 'o', Colors.GREEN, game_map=self)
                 else:
-                    ent = Item("Candy", pos, 'd', Colors.BLUE, False)
+                    ent = Item("Candy", pos, 'd', Colors.BLUE, game_map=self)
 
                 self.entities.append(ent)
 

@@ -155,7 +155,7 @@ class DisplayManager(metaclass=Singleton):
         cur_map = cls.dungeon.current_level
         if cls.dungeon.fov_recomputed:
             cls.dungeon.fov_recomputed = False
-            
+
             for x in range(cur_map.width):
                 for y in range(cur_map.height):
                     pos = Vector(x, y)

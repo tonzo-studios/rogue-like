@@ -108,14 +108,14 @@ class ActionManager(metaclass=Singleton):
         """
         dest_pos = cls.player.pos + move_direction
         if cls.dungeon.current_level.walkable[dest_pos]:
+            cls.player.move(move_direction)
+            # Player moved, recompute FOV
+            cls.dungeon.recompute_fov()
+        else:
             target = cls.dungeon.current_level.get_blocking_entity_at_location(dest_pos)
             # If the player is moving towards an enemy, attack it
-            if target:
+            if target and target.type == 'actor':
                 cls.player.attack(target)
-            else:
-                cls.player.move(move_direction)
-                # Player moved, recompute FOV
-                cls.dungeon.recompute_fov()
         return True
 
     def pickup_action(cls):

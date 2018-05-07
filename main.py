@@ -14,7 +14,7 @@ from misc import Vector, Colors, message
 
 def main():
     # Initialize player, display_manager
-    player = Actor("Player", Vector(0, 0), NullBehavior(), '@', Colors.WHITE)
+    player = Actor("Player", Vector(0, 0), NullBehavior(), '@', Colors.WHITE, game_map=None)
     # XXX: Give player level boost for testing purposes
     player.level = 10
 

@@ -10,7 +10,7 @@ class Behavior(metaclass=Singleton):
     Base class for behaviors.
     """
 
-    def take_turn(self, caller, target, game_map):
+    def take_turn(self, caller, target):
         """
         Let the current entity take a turn.
 
@@ -38,7 +38,7 @@ class NullBehavior(Behavior):
     Do nothing.
     """
 
-    def take_turn(self, caller, target, game_map):
+    def take_turn(self, caller, target):
         pass
 
 
@@ -47,15 +47,33 @@ class BasicMonster(Behavior):
     Follow a target if visible and attack when in melee range.
     """
 
-    def take_turn(self, caller, target, game_map):
+    def take_turn(self, caller, target):
         # Check if the monster can see the target
         # TODO: For now, we just check if the player can see the monster and
         # assume the monster can see it too. If we make entities with different
         # visibility radius, this will have to change
+        # TODO: Add patrol mode if the player is not visible
+        assert caller.game_map == target.game_map
+        game_map = caller.game_map
         if game_map.fov[caller.pos]:
             if caller.distance_to(target.pos) >= 2:
-                # Target is too far to attack, move towards it
-                caller.move_towards(target.pos, game_map)
+                # Target is too far to attack, try moving towards it
+                path = game_map.compute_path(caller.pos, target.pos)
+                if not path:
+                    # Can't reach the target, don't do anything
+                    return
+                # Only try to move closer to the target if the monster doesn't have to lose vision of the target to do
+                # so. In this case, don't do anything
+                for tile in path:
+                    if not game_map.fov[tile]:
+                        # Try to move closer taking one step in the direction of the target
+                        direction = (target.pos - caller.pos).snap_to_grid()
+                        if game_map.walkable[caller.pos + direction]:
+                            caller.move(direction)
+                            return
+                # The path is clear and the monster doesn't have to lose sight of the target, so follow the path
+                direction = path[0] - caller.pos
+                caller.move(direction)
             else:
                 # Attack the target
                 if target.type == 'actor':

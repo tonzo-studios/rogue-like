@@ -4,7 +4,7 @@
 import os
 
 from enum import Enum
-from math import sqrt
+from math import sqrt, atan2, pi
 
 
 # Classes
@@ -69,6 +69,28 @@ class Vector:
         """Return a unitary vector with the same direction."""
         norm = self.norm
         return Vector(self.x / norm, self.y / norm)
+
+    def snap_to_grid(self):
+        """
+        Returns a unitary vector after snapping the vector's direction to the closest tile in the grid using the
+        8 possible directions: N, W, S, E, NW, SW, NE, SE.
+        """
+        angle = atan2(self.y, self.x)
+        # Map octant index to unit vector, starting from E (0) and going counter-clockwise
+        octant_to_direction = {
+            0: Vector(1, 0),  # E
+            1: Vector(1, 1),  # NE
+            2: Vector(0, 1),  # N
+            3: Vector(-1, 1),  # NW
+            4: Vector(-1, 0),  # W
+            5: Vector(-1, -1),  # SW
+            6: Vector(0, -1),  # S
+            7: Vector(1, -1)  # SE
+        }
+        # Find out which octant we're in
+        octant = round(8 * angle / (2 * pi) + 8) % 8
+        # Get direction using the octant to direction map
+        return octant_to_direction[octant]
 
 
 class Colors:

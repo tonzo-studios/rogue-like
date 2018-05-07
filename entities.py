@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABC, abstractmethod
+from collections import OrderedDict
 from math import floor
 
 from backpack import Backpack
@@ -36,10 +37,11 @@ class Entity(ABC):
         blocks (bool): Whether this entity is blocking or not.
         render_priority (RenderPriority): At what layer should this entity be
             rendered.
+        game_map (Level): Reference to the level where the entity resides.
     """
 
     @abstractmethod
-    def __init__(self, name, pos, type, char, color, blocks, render_priority):
+    def __init__(self, name, pos, type, char, color, blocks, render_priority, game_map):
         self.name = name
         self.pos = pos
         self.type = type
@@ -47,19 +49,26 @@ class Entity(ABC):
         self.color = color
         self.blocks = blocks
         self.render_priority = render_priority
+        self.game_map = game_map
 
     def __repr__(self):
         return f"{self.name} <{self.type}>@{self.pos}"
 
     def move(self, direction):
         """
-        Move this entity in the specified direction.
+        Move this entity in the specified direction in the given map.
 
         Args:
             direction (Vector): Direction towards which to move this entity.
+            game_map (Level): Map where the entity resides.
        """
 
+        old_pos = self.pos
         self.pos += direction
+        if self.blocks:
+            # Update blocked tile in the map
+            self.game_map.walkable[old_pos] = True
+            self.game_map.walkable[self.pos] = False
 
     def distance_to(self, dest):
         """
@@ -74,20 +83,23 @@ class Entity(ABC):
         """
         return (self.pos - dest).norm
 
-    def move_towards(self, dest, game_map):
+    def move_towards(self, dest):
         """
         Move towards the destination if there's a clear path.
 
         Args:
             dest (Vector): Position to move to.
             game_map (Dungeon): Current map where movement is registered.
-    """
+        """
 
-        path = game_map.compute_path(self.pos, dest)
-        next_tile = Vector(path[0][0], path[0][1])
+        path = self.game_map.compute_path(self.pos, dest)
+        if not path:
+            # Don't do anything
+            return
+        next_tile = path[0]
         direction = next_tile - self.pos
 
-        if game_map.walkable[next_tile] and not game_map.get_blocking_entity_at_location(next_tile):
+        if self.game_map.walkable[next_tile] and not self.game_map.get_blocking_entity_at_location(next_tile):
             self.move(direction)
 
 
@@ -103,8 +115,8 @@ class Item(Entity):
         weight (float): Weight of the item, defaults to 1.0
     """
 
-    def __init__(self, name, pos, char, color, blocks=False, effect=None, weight=1.0):
-        super().__init__(name, pos, 'item', char, color, blocks, RenderPriority.ITEM)
+    def __init__(self, name, pos, char, color, game_map, blocks=False, effect=None, weight=1.0):
+        super().__init__(name, pos, 'item', char, color, blocks, RenderPriority.ITEM, game_map)
         self.behavior = NullBehavior()
         self.effect = effect
         self.weight = weight
@@ -126,8 +138,8 @@ class Item(Entity):
             message("Nothing happened...")
         return False
 
-    def take_turn(self, target, game_map):
-        self.behavior.take_turn(None, None, None)
+    def take_turn(self, target):
+        self.behavior.take_turn(None, None)
 
 
 class Actor(Entity):
@@ -135,9 +147,9 @@ class Actor(Entity):
     An actor is an entity that can perform actions on its own.
     """
 
-    def __init__(self, name, pos, behavior, char, color):
+    def __init__(self, name, pos, behavior, char, color, game_map):
         super().__init__(name, pos, 'actor', char, color, blocks=True,
-                         render_priority=RenderPriority.ACTOR)
+                         render_priority=RenderPriority.ACTOR, game_map=game_map)
         self.behavior = behavior
         # base stats
         self._strength = 5
@@ -192,6 +204,7 @@ class Actor(Entity):
         self.name += " corpse"
         self.blocks = False
         self.render_priority = RenderPriority.CORPSE
+        self.game_map.walkable[self.pos] = True
 
     # Stat properties
     @property
