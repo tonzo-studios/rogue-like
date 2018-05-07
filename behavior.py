@@ -11,6 +11,25 @@ class Behavior(metaclass=Singleton):
     """
 
     def take_turn(self, caller, target, game_map):
+        """
+        Let the current entity take a turn.
+
+        A turn is defined by the usual actions that an entity can perform
+        before other entities can take a turn.
+
+        Examples:
+            * Moving
+            * Attacking
+            * Consuming / using items
+            * Activating mechanisms
+            * Picking up items
+            * Catching fire
+
+        Args:
+            caller (Entity): Entity that performs the action.
+            target (Entity): Entity to perform actions on, can be None.
+            game_map (Level): Level in the dungeon where the actions are performed.
+        """
         raise NotImplementedError
 
 

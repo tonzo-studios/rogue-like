@@ -42,7 +42,7 @@ def main():
 
         # Enemy turn
         for entity in dungeon.current_level.entities:
-            entity.take_turn(player, dungeon.current_level)
+            entity.behavior.take_turn(entity, player, dungeon.current_level)
 
         # Check for player death
         # TODO: Handle player death as a game state

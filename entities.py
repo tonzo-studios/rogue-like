@@ -246,26 +246,6 @@ class Actor(Entity):
         # TODO: Work out differents types of damage
         other.hp -= self.physical_dmg
 
-    def take_turn(self, target, game_map):
-        """
-        Let the current actor take a turn.
-
-        A turn is defined by the usual actions that an Actor can perform
-        before other Actos can take a turn.
-
-        Examples:
-            * Moving
-            * Attacking
-            * Consuming / using items
-            * Activating mechanisms
-            * Picking up items
-
-        Args:
-            target (Entity): Entity to perform actions on, can be None.
-            game_map (Dungeon): Dungeon where the actions are performed.
-        """
-        self.behavior.take_turn(self, target, game_map)
-
     def _die(self):
         """Become a corpse."""
         self.char = '%'
