@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from abc import ABC, abstractmethod
-from collections import OrderedDict
 from math import floor
 
 from backpack import Backpack
