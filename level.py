@@ -6,9 +6,8 @@ from random import randint
 
 from tdl.map import Map
 
-from behavior import BasicMonster
-from entities import Actor, Item
-from misc import Colors, Vector
+from entities import Actor
+from misc import Vector
 
 
 class Room:
@@ -107,11 +106,10 @@ class Level:
         room_max_size (int): Max amount of tiles per room.
         max_entities_per_room (int): Max amount of entities to be spawned
             per room.
-        player (Actor): Actor object representing the player to be placed
-            into the level.
+        registry (Registry): Reference to the game's registry.
     """
 
-    def __init__(self, width, height, room_max_count, room_min_size, room_max_size, max_entities_per_room, player):
+    def __init__(self, width, height, room_max_count, room_min_size, room_max_size, max_entities_per_room, registry):
         # TODO: Instead of using so many variables, use a context which contains them all and depends on the theme
         self._map = Map(width, height)
         self.width = width
@@ -127,8 +125,18 @@ class Level:
         # TODO: Use stairs entity, and only define them upon level generation
         self.up_stairs = Vector(0, 0)
         self.down_stairs = Vector(0, 0)
+
+        # Get info relative to the level generation
+        self.room_max_count = room_max_count
+        self.room_min_size = room_min_size
+        self.room_max_size = room_max_size
+        self.max_entities_per_room = max_entities_per_room
+
         # Generate the level
-        self.generate(room_max_count, room_min_size, room_max_size, max_entities_per_room, player)
+        self.generate()
+        # Throw some monsters and items in it
+        # TODO: Instead of passing the registry, use a context/theme
+        self.populate(registry)
 
     def _init_room(self, room):
         """Make the tiles in the map that correspond to the room walkable."""
@@ -152,20 +160,9 @@ class Level:
             self.walkable[pos] = True
             self.transparent[pos] = True
 
-    def generate(self, room_max_count, room_min_size, room_max_size,
-                 max_entities_per_room, player):
+    def generate(self):
         """
-        Generate a level, place the player and populate it with entities.
-
-        Args:
-            room_max_count (int): Max amount of rooms to be generated for this
-                particular level.
-            room_min_size (int): Min amount of tiles per room.
-            room_max_size (int): Max amount of tiles per room.
-            max_entities_per_room (int): Max amount of entities to be spawned
-                per room.
-            player (Actor): Actor object representing the player to be placed
-                into the level.
+        Generate the level's layout.
         """
         # Initialize map
         for x in range(self.width):
@@ -174,10 +171,10 @@ class Level:
                 self.walkable[pos] = False
                 self.transparent[pos] = False
 
-        for r in range(room_max_count):
+        for r in range(self.room_max_count):
             # Random width and height
-            w = randint(room_min_size, room_max_size)
-            h = randint(room_min_size, room_max_size)
+            w = randint(self.room_min_size, self.room_max_size)
+            h = randint(self.room_min_size, self.room_max_size)
             # Random position without going out of the boundaries of the map
             x = randint(0, self.width - w - 1)
             y = randint(0, self.height - h - 1)
@@ -195,12 +192,8 @@ class Level:
                 center = new_room.center()
 
                 if not self.rooms:
-                    # First room, position the player
-                    player.pos = center
-                    player.game_map = self
-                    self.entities.append(player)
-                    # Place up stairs at the same position as the player
-                    self.up_stairs = player.pos
+                    # First room, place up stairs
+                    self.up_stairs = center
                 else:
                     # Connect room to previous room
                     previous = self.rooms[-1].center()
@@ -215,9 +208,15 @@ class Level:
                         self._create_v_tunnel(previous.y, center.y, previous.x)
                         self._create_h_tunnel(previous.x, center.x, center.y)
 
-                self._place_entities(new_room, max_entities_per_room)
                 self.rooms.append(new_room)
             # TODO: Place down stairs
+
+    def populate(self, registry):
+        """
+        Populate the level's rooms with entities.
+        """
+        for room in self.rooms:
+            self._place_entities(room, registry)
 
     def compute_fov(self, pos, fov, radius, light_walls):
         """
@@ -246,9 +245,8 @@ class Level:
             pos2 (Vector): Vector representing the destination.
 
         Returns:
-            list(tuple): A list of tuples, where each tuple represents the
-                coordinates (x, y) of the next tile in the path. The list goes
-                up to the pos2.
+            list(Vector): A list of vectors, where each vector represents the position of the next tile in the path.
+                The list goes up to the pos2.
         """
         # Get current walkable state
         pos1_walkable = self.walkable[pos1]
@@ -264,16 +262,15 @@ class Level:
         self.walkable[pos2] = pos2_walkable
         return path
 
-    def _place_entities(self, room, max_entities_per_room):
+    def _place_entities(self, room, registry):
         """
-        Spawn and place entities in a room.
+        Spawn and place entities in a single room.
 
         Args:
             room (Room): Room in which to spawn the entities.
-            max_entities_per_room (int): Max amount of entities to spawn in the
-                passed-in room.
+            registry (Registry): Reference to the game's registry.
         """
-        entity_number = randint(0, max_entities_per_room)
+        entity_number = randint(0, self.max_entities_per_room)
 
         for i in range(entity_number):
             # Get a random position inside the room
@@ -284,14 +281,18 @@ class Level:
             # Check if there's already an entity there
             if not [entity for entity in self.entities if entity.pos == pos]:
                 # Spawn a monster
-                # TODO: Change hardcoded monster into method that takes into account
-                # dungeon level, theme etc to spawn monsters using factory pattern
-                if randint(0, 1) == 1:
-                    ent = Actor("Orc", pos, BasicMonster(), 'o', Colors.GREEN, game_map=self)
+                # TODO: Use context instead of hardcoded entities
+                # FIXME: Remove these when we implement context
+                from registry import Actors, Items
+                dice = randint(0, 2)
+                if dice == 0:
+                    ent = registry.get_actor(Actors.ORC)
+                elif dice == 1:
+                    ent = registry.get_actor(Actors.POOPY)
                 else:
-                    ent = Item("Candy", pos, 'd', Colors.BLUE, game_map=self)
+                    ent = registry.get_item(Items.CANDY)
 
-                self.entities.append(ent)
+                ent.place(self, pos)
 
     def get_blocking_entity_at_location(self, pos):
         """

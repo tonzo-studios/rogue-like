@@ -21,27 +21,31 @@ class Backpack(metaclass=Singleton):
     cur_weight = 0.0
     max_weight = 100.0
 
-    def _search(cls, name):
-        for item in cls.contents:
-            if item.name == name:
-                return item
+    def __init__(cls, registry):
+        cls.registry = registry
 
-    def add(cls, item, qty):
+    def _search(cls, key):
+        for item_key in cls.contents:
+            if item_key == key:
+                return True
+
+    def add(cls, item_key, qty):
         """
         Add the specified qty of item to the backpack's contents.
 
         Args:
-            item (Item): Item object to be added to the contents of the backpack.
+            item_key (Items): ID of the item to be added to the contents of the backpack.
             qty (int): Amount of the item to be added to the contents of the backpack.
         """
-        c_item = cls._search(item.name)
-        if c_item and c_item.weight * qty + cls.cur_weight <= cls.max_weight:
-            cls.contents[c_item] += qty
-            cls.cur_weight += c_item.weight * qty
+        weight = cls.registry.get_item(item_key).weight
+        found = cls._search(item_key)
+        if found and weight * qty + cls.cur_weight <= cls.max_weight:
+            cls.contents[item_key] += qty
+            cls.cur_weight += weight * qty
         else:
-            if item.weight * qty + cls.cur_weight <= cls.max_weight:
-                cls.contents[item] = qty
-                cls.cur_weight += item.weight * qty
+            if weight * qty + cls.cur_weight <= cls.max_weight:
+                cls.contents[item_key] = qty
+                cls.cur_weight += weight * qty
 
     def use(cls, i, target):
         """
@@ -57,12 +61,13 @@ class Backpack(metaclass=Singleton):
             i (int): Index of the item to be used.
             target (Actor): Actor upon which to use the item's effect if any.
         """
-        item = list(cls.contents)[i]
-        used = item.use(target)
+        item_key = list(cls.contents)[i]
+        item_object = cls.registry.get_item(item_key)
+        used = item_object.use(target)
 
         if used:
-            if cls.contents[item] == 1:
-                del cls.contents[item]
+            if cls.contents[item_key] == 1:
+                del cls.contents[item_key]
             else:
-                cls.contents[item] -= 1
-            cls.cur_weight -= item.weight
+                cls.contents[item_key] -= 1
+            cls.cur_weight -= item_object.weight

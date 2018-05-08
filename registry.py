@@ -4,17 +4,38 @@
 import inspect
 import json
 import sys
+from enum import Enum, unique
 from functools import partial
 
 import effects
+from backpack import Backpack
 from entities import Actor, Item
 from misc import Singleton
+
+
+@unique
+class Actors(Enum):
+    HERO = 0
+    ORC = 1
+    DRAKE = 2
+    POOPY = 3
+
+
+@unique
+class Items(Enum):
+    CANDY = 1
 
 
 class RegistryError(NameError):
 
     def __init__(self, message):
         super().__init__(message)
+
+
+class RegistryNotInitializedError(RegistryError):
+
+    def __init__(self):
+        super().__init__("The registry hasn't been initialized yet.")
 
 
 class BehaviorNotFoundError(RegistryError):
@@ -29,10 +50,10 @@ class EffectNotFoundError(RegistryError):
         super().__init__(f"The effect '{effect}' was not found in the registry.")
 
 
-class MonsterNotFoundError(RegistryError):
+class ActorNotFoundError(RegistryError):
 
-    def __init__(self, monster):
-        super().__init__(f"The monster '{monster}' was not found in the registry.")
+    def __init__(self, actor):
+        super().__init__(f"The actor '{actor}' was not found in the registry.")
 
 
 class ItemNotFoundError(RegistryError):
@@ -43,21 +64,25 @@ class ItemNotFoundError(RegistryError):
 
 class Registry(metaclass=Singleton):
     """
-    The registry contains info about most classes in the game, serving as a factory for things like monsters and items.
+    The registry contains info about most classes in the game, serving as a factory for things like actors and items.
 
     The registry is a singleton, and loads all the needed information from json files upon creation. All data remains
     loaded in the registry until the game is closed.
     """
     behaviors = {}
     effect = {}
-    monsters = {}
+    actors = {}
     items = {}
+    loaded = False
 
     def __init__(cls):
         """
         Load all data upon creation.
         """
         cls.load()
+        # Initialize other variables stored in the registry
+        cls.backpack = Backpack(cls)
+        cls.loaded = True
 
     @staticmethod
     def _load_module(module_name):
@@ -72,13 +97,13 @@ class Registry(metaclass=Singleton):
     def _load_effects(cls):
         cls.effect = dict(cls._load_module('effects'))
 
-    def _load_monsters(cls):
-        with open('monsters.json', 'r') as f:
-            json_monsters = json.load(f)
+    def _load_actors(cls):
+        with open('actors.json', 'r') as f:
+            json_actors = json.load(f)
 
         mob_map = ('name', 'char', 'color')
 
-        for mob_vals in json_monsters.values():
+        for key, mob_vals in json_actors.items():
             json_behavior = mob_vals.pop()
             real_behavior = cls.behaviors.get(json_behavior)
 
@@ -87,7 +112,7 @@ class Registry(metaclass=Singleton):
 
             mob_vals = dict(zip(mob_map, mob_vals))
 
-            cls.monsters[mob_vals['name']] = partial(
+            cls.actors[Actors(int(key))] = partial(
                 Actor, behavior=real_behavior, **mob_vals)
 
     def _load_items(cls):
@@ -97,7 +122,7 @@ class Registry(metaclass=Singleton):
         mob_map = ('name', 'char', 'color')
         item_map = (*mob_map, 'blocks')
 
-        for item_vals in json_items.values():
+        for key, item_vals in json_items.items():
             json_effect = item_vals.pop()
             real_effect = cls.effect.get(json_effect)
 
@@ -106,16 +131,16 @@ class Registry(metaclass=Singleton):
 
             item_vals = dict(zip(item_map, item_vals))
 
-            cls.items[item_vals['name']] = partial(
+            cls.items[Items(int(key))] = partial(
                 Item, effect=real_effect, **item_vals)
 
     def load(cls):
         cls._load_behaviors()
         cls._load_effects()
-        cls._load_monsters()
+        cls._load_actors()
         cls._load_items()
 
-    def get_behavior(cls, key):
+    def _get_behavior(cls, key):
         """
         Retrieve the behavior corresponding to the key in the registry.
 
@@ -128,12 +153,14 @@ class Registry(metaclass=Singleton):
         Raises:
             BehaviorNotFoundError: If there's no behavior with the given key in the registry.
         """
+        if not cls.loaded:
+            raise RegistryNotInitializedError
         behavior = cls.behaviors.get(key)
         if behavior is None:
             raise BehaviorNotFoundError(key)
         return behavior
 
-    def get_effect(cls, key):
+    def _get_effect(cls, key):
         """
         Retrieve the effect corresponding to the key in the registry.
 
@@ -146,52 +173,49 @@ class Registry(metaclass=Singleton):
         Raises:
             EffectNotFoundError: If there's no effect with the given key in the registry.
         """
+        if not cls.loaded:
+            raise RegistryNotInitializedError
         effect = cls.effect.get(key)
         if effect is None:
             raise EffectNotFoundError(key)
         return effect
 
-    def get_monster(cls, key):
+    def get_actor(cls, key):
         """
-        Return a partial for an Actor object with some data filled in:
-            * Name
-            * Char
-            * Color
-            * Behavior
+        Return a new Actor object using the data in the registry corresponding to the given ID.
 
         Args:
-            key (string): Name of the monster to get.
+            key (Actors): ID of the actor to get.
 
         Returns:
-            functools.partial: A partial for an Actor with most info for the constructor filled in.
+            Actor: An Actor with the information corresponding to the ID in the registry.
 
         Raises:
-            MonsterNotFoundError: If there's no monster with the given key in the registry.
+            ActorNotFoundError: If there's no actor with the given key in the registry.
         """
-        monster = cls.monsters.get(key)
-        if monster is None:
-            raise MonsterNotFoundError(key)
-        return monster
+        if not cls.loaded:
+            raise RegistryNotInitializedError
+        actor = cls.actors.get(key)
+        if actor is None:
+            raise ActorNotFoundError(key)
+        return actor(key=key)
 
     def get_item(cls, key):
         """
-        Return a partial for an Item object with some data filled in:
-            * Name
-            * Char
-            * Color
-            * Behavior
-            * Blocks
+        Return a new Item object using the data in the registry corresponding to the given ID.
 
         Args:
-            key (string): Name of the item to get.
+            key (Items): ID of the item to get.
 
         Returns:
-            functools.partial: A partial for an Item with most info for the constructor filled in.
+            Item: An Item with the information corresponding to the ID in the registry.
 
         Raises:
             ItemNotFoundError: If there's no item with the given key in the registry.
         """
+        if not cls.loaded:
+            raise RegistryNotInitializedError
         item = cls.items.get(key)
         if item is None:
             raise ItemNotFoundError(key)
-        return item
+        return item(key=key)

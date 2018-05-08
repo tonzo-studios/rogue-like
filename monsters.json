@@ -1,5 +1,0 @@
-{
-    "orc": ["orc", "o", [0, 255, 0], "BasicMonster"],
-    "drake": ["drake", "D", [255, 0, 0], "BasicMonster"],
-    "poopy": ["poopy", "p", [0, 0, 0], "NullBehavior"]
-}

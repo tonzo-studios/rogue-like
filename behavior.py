@@ -10,7 +10,8 @@ class Behavior(metaclass=Singleton):
     Base class for behaviors.
     """
 
-    def take_turn(self, caller, target):
+    @staticmethod
+    def take_turn(caller, target):
         """
         Let the current entity take a turn.
 
@@ -28,7 +29,6 @@ class Behavior(metaclass=Singleton):
         Args:
             caller (Entity): Entity that performs the action.
             target (Entity): Entity to perform actions on, can be None.
-            game_map (Level): Level in the dungeon where the actions are performed.
         """
         raise NotImplementedError
 
@@ -38,7 +38,8 @@ class NullBehavior(Behavior):
     Do nothing.
     """
 
-    def take_turn(self, caller, target):
+    @staticmethod
+    def take_turn(caller, target):
         pass
 
 
@@ -47,13 +48,14 @@ class BasicMonster(Behavior):
     Follow a target if visible and attack when in melee range.
     """
 
-    def take_turn(self, caller, target):
+    @staticmethod
+    def take_turn(caller, target):
         # Check if the monster can see the target
         # TODO: For now, we just check if the player can see the monster and
         # assume the monster can see it too. If we make entities with different
         # visibility radius, this will have to change
         # TODO: Add patrol mode if the player is not visible
-        assert caller.game_map == target.game_map
+        assert caller.game_map is not None and caller.game_map == target.game_map
         game_map = caller.game_map
         if game_map.fov[caller.pos]:
             if caller.distance_to(target.pos) >= 2:

@@ -26,9 +26,8 @@ class Entity(ABC):
         * Enemies.
 
     Args:
-        name (str): A human-readable identifier for the entity, doesn't have to
-            be unique.
-        pos (Vector): The starting position of this entity in the current map.
+        key (Enum): An identifier for the entity in the registry.
+        name (str): A name for the entity, doesn't have to be unique.
         type (str): Pseudo-type of this entity, can be one of 'player', 'npc',
             'enemy', 'item', ...
         char (str): How the entity will be visually displayed.
@@ -36,22 +35,23 @@ class Entity(ABC):
         blocks (bool): Whether this entity is blocking or not.
         render_priority (RenderPriority): At what layer should this entity be
             rendered.
-        game_map (Level): Reference to the level where the entity resides.
     """
 
+    pos = Vector(0, 0)
+    game_map = None
+
     @abstractmethod
-    def __init__(self, name, pos, type, char, color, blocks, render_priority, game_map):
+    def __init__(self, key, name, type, char, color, blocks, render_priority):
+        self.key = key
         self.name = name
-        self.pos = pos
         self.type = type
         self.char = char
         self.color = color
         self.blocks = blocks
         self.render_priority = render_priority
-        self.game_map = game_map
 
     def __repr__(self):
-        return f"{self.name} <{self.type}>@{self.pos}"
+        return f"{self.key.name} '{self.name}' <{self.type}>@{self.pos}"
 
     def move(self, direction):
         """
@@ -59,7 +59,6 @@ class Entity(ABC):
 
         Args:
             direction (Vector): Direction towards which to move this entity.
-            game_map (Level): Map where the entity resides.
        """
 
         old_pos = self.pos
@@ -88,7 +87,6 @@ class Entity(ABC):
 
         Args:
             dest (Vector): Position to move to.
-            game_map (Dungeon): Current map where movement is registered.
         """
 
         path = self.game_map.compute_path(self.pos, dest)
@@ -100,6 +98,24 @@ class Entity(ABC):
 
         if self.game_map.walkable[next_tile] and not self.game_map.get_blocking_entity_at_location(next_tile):
             self.move(direction)
+
+    def place(self, game_map, position):
+        """
+        Place the entity at a certain position in the given map.
+
+        Args:
+            game_map (Level): Level in which to place the entity.
+            position (Vector): Position in the level where the entity should be placed.
+        """
+        # If the entity was on another map, first remove it from there
+        if self.game_map:
+            self.game_map.entities.remove(self)
+            self.game_map.walkable[self.pos] = True
+        self.game_map = game_map
+        self.pos = position
+        game_map.entities.append(self)
+        if self.blocks:
+            game_map.walkable[position] = False
 
 
 class Item(Entity):
@@ -114,8 +130,8 @@ class Item(Entity):
         weight (float): Weight of the item, defaults to 1.0
     """
 
-    def __init__(self, name, pos, char, color, game_map, blocks=False, effect=None, weight=1.0):
-        super().__init__(name, pos, 'item', char, color, blocks, RenderPriority.ITEM, game_map)
+    def __init__(self, key, name, char, color, blocks=False, effect=None, weight=1.0):
+        super().__init__(key, name, 'item', char, color, blocks, RenderPriority.ITEM)
         self.behavior = NullBehavior()
         self.effect = effect
         self.weight = weight
@@ -144,11 +160,13 @@ class Item(Entity):
 class Actor(Entity):
     """
     An actor is an entity that can perform actions on its own.
+
+    Args:
+        registry (Registry): A reference to the game's registry. Only needed to instantiate the backpack.
     """
 
-    def __init__(self, name, pos, behavior, char, color, game_map):
-        super().__init__(name, pos, 'actor', char, color, blocks=True,
-                         render_priority=RenderPriority.ACTOR, game_map=game_map)
+    def __init__(self, key, name, behavior, char, color, registry=None):
+        super().__init__(key, name, 'actor', char, color, blocks=True, render_priority=RenderPriority.ACTOR)
         self.behavior = behavior
         # base stats
         self._strength = 5
@@ -161,9 +179,11 @@ class Actor(Entity):
         self._exp = 0
         self._max_exp = floor(1 + 300 * 2 ** (1 / 7)) / 4
         self._gold = 100
-        # technically all actors will have a backpack, but since it's a singleton
-        # and only player has access to it, it doesn't matter.
-        self.backpack = Backpack()
+        # Access to the game's registry, should be None for all actors except for the player
+        self.registry = registry
+        # Only the player gets a reference to the backpack
+        if registry is not None:
+            self.backpack = registry.backpack
         # computed stats
         self._recompute_stats()
 
@@ -203,7 +223,9 @@ class Actor(Entity):
         self.name += " corpse"
         self.blocks = False
         self.render_priority = RenderPriority.CORPSE
-        self.game_map.walkable[self.pos] = True
+        # If the actor didn't die in oblivion, corpse becomes walkable
+        if self.game_map is not None:
+            self.game_map.walkable[self.pos] = True
 
     # Stat properties
     @property
