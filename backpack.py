@@ -15,6 +15,9 @@ class Backpack(metaclass=Singleton):
     When adding items it will check if the item already exists in the backpack and will increase
     the quantity counter if it does, it will add the item if it doesn't exist and there's
     enough free space in the backpack.
+
+    Args:
+        registry (Registry): A reference to the registry where it resides, so it can access items by key.
     """
 
     contents = OrderedDict()
@@ -28,6 +31,7 @@ class Backpack(metaclass=Singleton):
         for item_key in cls.contents:
             if item_key == key:
                 return True
+        return False
 
     def add(cls, item_key, qty):
         """
@@ -42,10 +46,9 @@ class Backpack(metaclass=Singleton):
         if found and weight * qty + cls.cur_weight <= cls.max_weight:
             cls.contents[item_key] += qty
             cls.cur_weight += weight * qty
-        else:
-            if weight * qty + cls.cur_weight <= cls.max_weight:
-                cls.contents[item_key] = qty
-                cls.cur_weight += weight * qty
+        elif weight * qty + cls.cur_weight <= cls.max_weight:
+            cls.contents[item_key] = qty
+            cls.cur_weight += weight * qty
 
     def use(cls, i, target):
         """
@@ -71,3 +74,10 @@ class Backpack(metaclass=Singleton):
             else:
                 cls.contents[item_key] -= 1
             cls.cur_weight -= item_object.weight
+
+    def clear(cls):
+        """
+        Remove all the contents from the backpack.
+        """
+        cls.cur_weight = 0.0
+        cls.contents.clear()

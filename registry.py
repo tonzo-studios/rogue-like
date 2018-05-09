@@ -24,6 +24,7 @@ class Actors(Enum):
 @unique
 class Items(Enum):
     CANDY = 1
+    AIR = 2
 
 
 class RegistryError(NameError):
@@ -120,14 +121,15 @@ class Registry(metaclass=Singleton):
             json_items = json.load(f)
 
         mob_map = ('name', 'char', 'color')
-        item_map = (*mob_map, 'blocks')
+        item_map = (*mob_map, 'blocks', 'weight')
 
         for key, item_vals in json_items.items():
+            json_effect_args = item_vals.pop()
             json_effect = item_vals.pop()
-            real_effect = cls.effect.get(json_effect)
-
-            if real_effect is None:
-                raise EffectNotFoundError(json_effect)
+            real_effect = None
+            if json_effect is not None:
+                # Create the effect passing the required args
+                real_effect = cls.effect.get(json_effect)(*json_effect_args)
 
             item_vals = dict(zip(item_map, item_vals))
 

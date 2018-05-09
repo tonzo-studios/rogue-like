@@ -108,6 +108,9 @@ class Colors:
         which require the color to be generated at runtime.
     """
 
+    def __init__(self):
+        raise NotImplementedError("Colors is a static class, it cannot be instantiated")
+
     RED = (255, 0, 0)
     GREEN = (0, 255, 0)
     BLUE = (0, 0, 255)
@@ -148,7 +151,7 @@ def message(msg, color=Colors.WHITE):
         color (Colors): Color of the text that displays the message.
     """
     import display_manager
-    display_manager.DisplayManager().add_message(msg, color)
+    display_manager.DisplayManager.add_message(msg, color)
 
 
 def get_abs_path(rel_path):

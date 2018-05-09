@@ -1,0 +1,9 @@
+language: python
+before_install:
+  - sudo apt-get install gcc python-dev python3-dev libsdl2-dev libffi-dev libegl1-mesa-dev libgles2-mesa-dev -y
+python:
+  - "3.6"
+script:
+  - pytest
+notifications:
+  email: false

@@ -4,7 +4,6 @@
 from abc import ABC, abstractmethod
 from math import floor
 
-from backpack import Backpack
 from behavior import NullBehavior
 from misc import Colors, RenderPriority, message, Vector
 
@@ -126,7 +125,7 @@ class Item(Entity):
     can be picked up and/or given to the player.
 
     Args:
-        effect (Command): Triggered on item use, defaults to None.
+        effect (Effect): Triggered on item use, defaults to None for items with no effect.
         weight (float): Weight of the item, defaults to 1.0
     """
 
@@ -138,7 +137,7 @@ class Item(Entity):
 
     def use(self, target):
         """
-        Use the item upon the specified target.
+        Use the item upon the specified target, activating its effect. See Effect for more info.
 
         Args:
             target (Actor): The actor that will be affected by the item's effect.
@@ -146,8 +145,8 @@ class Item(Entity):
         Returns:
             bool: True if the effect was successfully used, False otherwise.
         """
-        if self.effect:
-            self.effect(target)
+        if self.effect is not None:
+            self.effect.take_effect(target)
             return True
         else:
             message("Nothing happened...")

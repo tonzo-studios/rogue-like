@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import tdl
 import textwrap
 
-import tdl
-
 from misc import Singleton, Vector, Colors, get_abs_path
+from dungeon import Dungeon
 
 
 class DisplayManager(metaclass=Singleton):
@@ -51,6 +51,7 @@ class DisplayManager(metaclass=Singleton):
         cls.player = player
         cls.dungeon = dungeon
 
+    @classmethod
     def add_message(cls, new_msg, color=Colors.WHITE):
         """
         Adds a text message to the UI log.

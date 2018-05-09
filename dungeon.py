@@ -94,7 +94,7 @@ class Dungeon(metaclass=Singleton):
             level = Level(cls.LEVEL_WIDTH, cls.LEVEL_HEIGHT, cls.MAX_ROOMS, cls.MIN_ROOM_SIZE, cls.MAX_ROOM_SIZE,
                           cls.MAX_ENTITIES_PER_ROOM, cls.registry)
             cls.levels.append(level)
-        # Place player on the level
+        # Place the player at the stairs
         cls.player.place(cls.current_level, cls.current_level.up_stairs)
         # Changing levels triggers a FOV recomputation
         cls.recompute_fov()
@@ -109,7 +109,7 @@ class Dungeon(metaclass=Singleton):
         if cls._cur_level <= 0:
             raise DungeonException("Already at the top level.")
         cls._cur_level -= 1
-        # Place player on the level
+        # Place the player at the stairs
         cls.player.place(cls.current_level, cls.current_level.down_stairs)
         # Changing levels triggers a FOV recomputation
         cls.recompute_fov()
