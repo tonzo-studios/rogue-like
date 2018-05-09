@@ -4,6 +4,7 @@
 import tdl
 import textwrap
 
+from entities import Stairs
 from misc import Singleton, Vector, Colors, get_abs_path
 from dungeon import Dungeon
 
@@ -157,6 +158,9 @@ class DisplayManager(metaclass=Singleton):
         if cls.dungeon.fov_recomputed:
             cls.dungeon.fov_recomputed = False
 
+            # First clear the old console before re-draw
+            cls.console.clear(fg=Colors.WHITE, bg=Colors.BLACK)
+
             for x in range(cur_map.width):
                 for y in range(cur_map.height):
                     pos = Vector(x, y)
@@ -194,7 +198,14 @@ class DisplayManager(metaclass=Singleton):
         entities_sorted = sorted(cls.dungeon.current_level.entities,
                                  key=lambda x: x.render_priority.value)
         for entity in entities_sorted:
+            # Draw visible entities
             if cls.dungeon.current_level.fov[entity.pos]:
+                cls.console.draw_char(
+                    entity.pos.x, entity.pos.y, entity.char, entity.color,
+                    bg=None
+                )
+            # Remember stairs location
+            if isinstance(entity, Stairs) and cls.dungeon.current_level.explored[entity.pos]:
                 cls.console.draw_char(
                     entity.pos.x, entity.pos.y, entity.char, entity.color,
                     bg=None

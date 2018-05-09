@@ -9,7 +9,7 @@ from behavior import NullBehavior
 from display_manager import DisplayManager
 from dungeon import Dungeon
 from entities import Actor
-from misc import Vector, Colors, message
+from misc import Colors, message
 from registry import Registry, Actors
 
 

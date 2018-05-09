@@ -117,12 +117,31 @@ class Entity(ABC):
             game_map.walkable[position] = False
 
 
-class Item(Entity):
+class Interactable(ABC):
+    """
+    Abstract class for things that entities can interact with. Can be implemented even by other entities.
+    """
+
+    @abstractmethod
+    def use(self, user):
+        """
+        Do something when the user interacts with this object.
+
+        Args:
+            user (Entity): Entity that interacts with the interactable object.
+        """
+        pass
+
+
+class Item(Entity, Interactable):
     """
     Represents an item in the game world and/or in the backpack.
 
     An item can be dropped by a monster, found randomly from the game world,
     can be picked up and/or given to the player.
+
+    Items are interactable, therefore the player can use them directly from the game map, without having to add it
+    to their backpack first.
 
     Args:
         effect (Effect): Triggered on item use, defaults to None for items with no effect.
@@ -147,13 +166,13 @@ class Item(Entity):
         """
         if self.effect is not None:
             self.effect.take_effect(target)
+            # If the item was used from an interaction in the map, remove it from the map
+            if self.game_map is not None:
+                self.game_map.entities.remove(self)
             return True
         else:
             message("Nothing happened...")
         return False
-
-    def take_turn(self, target):
-        self.behavior.take_turn(None, None)
 
 
 class Actor(Entity):
@@ -186,9 +205,11 @@ class Actor(Entity):
         # computed stats
         self._recompute_stats()
 
-    def _generic_setter(self, attr, val, _min=0):
-        if val >= _min:
+    def _generic_setter(self, attr, val, _min=0, _max=float('inf')):
+        if _min <= val <= _max:
             setattr(self, attr, val)
+        elif val > _max:
+            setattr(self, attr, _max)
         else:
             setattr(self, attr, _min)
 
@@ -281,7 +302,7 @@ class Actor(Entity):
 
     @hp.setter
     def hp(self, val):
-        self._generic_setter('_cur_hp', val, 0)
+        self._generic_setter('_cur_hp', val, 0, self.max_hp)
         # Check if the actor died
         if self.dead:
             self._die()
@@ -292,7 +313,7 @@ class Actor(Entity):
 
     @max_mp.setter
     def max_mp(self, val):
-        self._generic_setter('_max_mp', val)
+        self._generic_setter('_max_mp', val, 0, self.max_mp)
 
     @property
     def mp(self):
@@ -428,3 +449,36 @@ class Actor(Entity):
         self._magical_dmg = self._compute_magical_damage()
         self._crit_rate = self._compute_crit_rate()
         self._dodge_rate = self._compute_dodge_rate()
+
+
+class Stairs(Entity, Interactable, ABC):
+    def __init__(self, name, char, dungeon):
+        super().__init__(None, name, 'stairs', char, Colors.WHITE, False, RenderPriority.ACTOR)
+        self.behavior = NullBehavior()
+        self.dungeon = dungeon
+
+
+class StairsUp(Stairs):
+    def __init__(self, dungeon):
+        super().__init__("Stairs up", '<', dungeon)
+
+    def use(self, target):
+        """
+        Attempt to go up.
+        """
+        from dungeon import DungeonException
+        try:
+            self.dungeon.go_to_previous_level()
+        except DungeonException:
+            message("You can't leave yet!", Colors.WHITE)
+
+
+class StairsDown(Stairs):
+    def __init__(self, dungeon):
+        super().__init__("Stairs down", '>', dungeon)
+
+    def use(self, target):
+        """
+        Attempt to go down.
+        """
+        self.dungeon.go_to_next_level()

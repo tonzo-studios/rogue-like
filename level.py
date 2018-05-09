@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
-from random import randint
+from random import randint, choice
 
 from tdl.map import Map
 
-from entities import Actor
+from entities import StairsUp, StairsDown
 from misc import Vector
 
 
@@ -109,7 +109,8 @@ class Level:
         registry (Registry): Reference to the game's registry.
     """
 
-    def __init__(self, width, height, room_max_count, room_min_size, room_max_size, max_entities_per_room, registry):
+    def __init__(self, width, height, room_max_count, room_min_size, room_max_size, max_entities_per_room, dungeon,
+                 registry):
         # TODO: Instead of using so many variables, use a context which contains them all and depends on the theme
         self._map = Map(width, height)
         self.width = width
@@ -121,10 +122,10 @@ class Level:
         self.walkable = Tilemap(self._map.walkable)
         self.transparent = Tilemap(self._map.transparent)
         self.fov = Tilemap(self._map.fov)
+
         # Up and down stairs. These get updated when the level is generated.
-        # TODO: Use stairs entity, and only define them upon level generation
-        self.up_stairs = Vector(0, 0)
-        self.down_stairs = Vector(0, 0)
+        self.up_stairs = StairsUp(dungeon)
+        self.down_stairs = StairsDown(dungeon)
 
         # Get info relative to the level generation
         self.room_max_count = room_max_count
@@ -193,7 +194,8 @@ class Level:
 
                 if not self.rooms:
                     # First room, place up stairs
-                    self.up_stairs = center
+                    self.up_stairs.place(self, center)
+
                 else:
                     # Connect room to previous room
                     previous = self.rooms[-1].center()
@@ -209,7 +211,10 @@ class Level:
                         self._create_h_tunnel(previous.x, center.x, center.y)
 
                 self.rooms.append(new_room)
-            # TODO: Place down stairs
+
+        # Place down stairs
+        random_room = choice(self.rooms)
+        self.place_entity_randomly(self.down_stairs, random_room)
 
     def populate(self, registry):
         """
@@ -270,29 +275,20 @@ class Level:
             room (Room): Room in which to spawn the entities.
             registry (Registry): Reference to the game's registry.
         """
+        from registry import Actors, Items
+
         entity_number = randint(0, self.max_entities_per_room)
 
-        for i in range(entity_number):
-            # Get a random position inside the room
-            x = randint(room.x1 + 1, room.x2 - 1)
-            y = randint(room.y1 + 1, room.y2 - 1)
-            pos = Vector(x, y)
+        for _ in range(entity_number):
+            dice = randint(0, 2)
+            if dice == 0:
+                ent = registry.get_actor(Actors.ORC)
+            elif dice == 1:
+                ent = registry.get_actor(Actors.POOPY)
+            else:
+                ent = registry.get_item(Items.CANDY)
 
-            # Check if there's already an entity there
-            if not [entity for entity in self.entities if entity.pos == pos]:
-                # Spawn a monster
-                # TODO: Use context instead of hardcoded entities
-                # FIXME: Remove these when we implement context
-                from registry import Actors, Items
-                dice = randint(0, 2)
-                if dice == 0:
-                    ent = registry.get_actor(Actors.ORC)
-                elif dice == 1:
-                    ent = registry.get_actor(Actors.POOPY)
-                else:
-                    ent = registry.get_item(Items.CANDY)
-
-                ent.place(self, pos)
+            self.place_entity_randomly(ent, room)
 
     def get_blocking_entity_at_location(self, pos):
         """
@@ -312,3 +308,22 @@ class Level:
             if entity.pos == pos and entity.blocks:
                 return entity
         return None
+
+    def place_entity_randomly(self, entity, room, allow_overlap=False):
+        """
+        Places the given entity randomly in a given room.
+        """
+        # For now, naively assume that there's a free spot
+        while True:
+            # Get a random position inside the room
+            x = randint(room.x1 + 1, room.x2 - 1)
+            y = randint(room.y1 + 1, room.y2 - 1)
+            position = Vector(x, y)
+
+            # Check if there's already an entity in this spot
+            if not allow_overlap and [entity for entity in self.entities if entity.pos == position]:
+                continue
+
+            # We found a valid spot, place the entity
+            entity.place(self, position)
+            return

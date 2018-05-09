@@ -3,6 +3,7 @@
 
 import tdl
 
+from entities import Interactable
 from misc import Singleton, Vector
 
 
@@ -47,6 +48,7 @@ class ActionManager(metaclass=Singleton):
         Returns:
             True if an action that consumes a turn was performed by the player, False otherwise.
         """
+        # TODO: Have key mapping in config file and use enums (or something similar) instead
         if not cls.user_input:
             return False
 
@@ -90,6 +92,9 @@ class ActionManager(metaclass=Singleton):
         elif cls.user_input.char == 'g':
             return cls.pickup_action()
 
+        elif cls.user_input.char == 'e':
+            return cls.interact_action()
+
         else:
             return False
 
@@ -126,10 +131,28 @@ class ActionManager(metaclass=Singleton):
         Returns:
             True if the player picked something up, False otherwise.
         """
+        # FIXME: For now, the player picks up the first item found. Make him able to choose.
         loot = [e for e in cls.dungeon.current_level.entities if e.pos == cls.player.pos and e.type == 'item']
 
         if loot:
             cls.player.backpack.add(loot[0].key, 1)
             cls.dungeon.current_level.entities.remove(loot[0])
+            return True
+        return False
+
+    def interact_action(cls):
+        """
+        The player attempts to interact with some object at the position he's currently at.
+
+        Returns:
+            True if the player interacts with an object, False if there was no interactable object to interact with.
+        """
+        # FIXME: For now, the player interacts with the first interactable found. Make him able to choose.
+        interactables = [e for e in cls.dungeon.current_level.entities if
+                         e.pos == cls.player.pos and isinstance(e, Interactable)]
+
+        if interactables:
+            # Use on self
+            interactables[0].use(cls.player)
             return True
         return False
