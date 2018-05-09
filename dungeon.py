@@ -80,12 +80,16 @@ class Dungeon(metaclass=Singleton):
         cls.levels = []
         cls._cur_level = -1
         cls.player = None
+        cls.registry = None
 
     def go_to_next_level(cls):
         """
         Moves the player to the next level. If it's the first time the level is visited,
         it generates it and adds it to the level list.
         """
+        if cls.player is None:
+            raise DungeonException("Dungeon hasn't been initialized yet.")
+
         cls._cur_level += 1
 
         if len(cls.levels) < cls.current_level_number:
