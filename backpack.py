@@ -27,7 +27,7 @@ class Backpack(metaclass=Singleton):
     def __init__(cls, registry):
         cls.registry = registry
 
-    def _search(cls, key):
+    def exists(cls, key):
         for item_key in cls.contents:
             if item_key == key:
                 return True
@@ -42,7 +42,7 @@ class Backpack(metaclass=Singleton):
             qty (int): Amount of the item to be added to the contents of the backpack.
         """
         weight = cls.registry.get_item(item_key).weight
-        found = cls._search(item_key)
+        found = cls.exists(item_key)
         if found and weight * qty + cls.cur_weight <= cls.max_weight:
             cls.contents[item_key] += qty
             cls.cur_weight += weight * qty
