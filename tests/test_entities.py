@@ -60,30 +60,6 @@ class TestEntity(object):
     def test_distance_to(self, player, air, candy):
         assert player.distance_to(air.pos) == player.distance_to(candy.pos)
 
-    def test_stat_recompute(self, player):
-        player.strength += 1
-        assert player.physical_dmg == 3.96
-
-    def test_actor_death(self, player):
-        player.hp -= 200
-        assert player.hp == 0
-        assert player.dead
-
-    def test_actor_level_up_standard(self, player):
-        player.exp += 83
-        assert player.level == 2
-        assert player.exp == 0
-
-    def test_actor_level_up_overshoot(self, player):
-        player.exp += 166
-        assert player.level == 3
-        assert player.exp == 0
-
-    def test_actor_level_up_extra(self, player):
-        player.exp += 100
-        assert player.level == 2
-        assert player.exp == 17
-
     def test_entity_placement(self, game_map, orc):
         from misc import Vector
         assert orc.game_map is None
@@ -111,6 +87,34 @@ class TestEntity(object):
         air.place(game_map, Vector(1, 1))
         assert game_map.walkable[Vector(0, 0)]
 
+
+class TestActor(object):
+    def test_stat_recompute(self, player):
+        player.strength += 1
+        assert player.physical_dmg == 3.96
+
+    def test_actor_death(self, player):
+        player.hp -= 200
+        assert player.hp == 0
+        assert player.dead
+
+    def test_actor_level_up_standard(self, player):
+        player.exp += 83
+        assert player.level == 2
+        assert player.exp == 0
+
+    def test_actor_level_up_overshoot(self, player):
+        player.exp += 166
+        assert player.level == 3
+        assert player.exp == 0
+
+    def test_actor_level_up_extra(self, player):
+        player.exp += 100
+        assert player.level == 2
+        assert player.exp == 17
+
+
+class TestItem(object):
     def test_item_interaction_exhaust(self, game_map, player, candy):
         assert candy in game_map.entities
         candy.use(player)
