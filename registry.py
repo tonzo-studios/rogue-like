@@ -71,7 +71,7 @@ class Registry(metaclass=Singleton):
     loaded in the registry until the game is closed.
     """
     behaviors = {}
-    effect = {}
+    effects = {}
     actors = {}
     items = {}
     loaded = False
@@ -96,7 +96,7 @@ class Registry(metaclass=Singleton):
         cls.behaviors = dict(cls._load_module('behavior'))
 
     def _load_effects(cls):
-        cls.effect = dict(cls._load_module('effects'))
+        cls.effects = dict(cls._load_module('effects'))
 
     def _load_actors(cls):
         with open('actors.json', 'r') as f:
@@ -129,7 +129,7 @@ class Registry(metaclass=Singleton):
             real_effect = None
             if json_effect is not None:
                 # Create the effect passing the required args
-                real_effect = cls.effect.get(json_effect)(*json_effect_args)
+                real_effect = cls.effects.get(json_effect)(*json_effect_args)
 
             item_vals = dict(zip(item_map, item_vals))
 
@@ -177,7 +177,7 @@ class Registry(metaclass=Singleton):
         """
         if not cls.loaded:
             raise RegistryNotInitializedError
-        effect = cls.effect.get(key)
+        effect = cls.effects.get(key)
         if effect is None:
             raise EffectNotFoundError(key)
         return effect
