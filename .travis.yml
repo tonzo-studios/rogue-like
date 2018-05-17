@@ -1,9 +1,14 @@
 language: python
-before_install:
-  - sudo apt-get install gcc python-dev python3-dev libsdl2-dev libffi-dev libegl1-mesa-dev libgles2-mesa-dev -y
 python:
   - "3.6"
+before_install:
+  - sudo apt-get install gcc python-dev python3-dev libsdl2-dev libffi-dev libegl1-mesa-dev libgles2-mesa-dev -y
+install:
+  - pip install -r requirements.txt
+  - pip install codecov
 script:
-  - pytest
+  - pytest --cov=./
+after_script:
+  - codecov
 notifications:
   email: false
