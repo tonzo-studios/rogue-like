@@ -32,15 +32,17 @@ def candy():
 
 class TestBackpackItem(object):
 
-    def test_add_to_backpack(self, player, air):
+    def test_add_to_backpack(self, player, air, candy):
         player.backpack.add(air.key, 100)
         assert air.key in player.backpack.contents
         assert player.backpack.contents[air.key] == 100
         assert player.backpack.cur_weight == 0.0
+        player.backpack.add(candy.key)
+        assert player.backpack.contents[candy.key] == 1
 
     def test_use_unusable_item(self, player, air):
-        player.backpack.add(air.key, 1)
-        player.backpack.use(0, player)
+        player.backpack.add(air.key)
+        player.backpack.use(air.key, player)
         assert player.backpack.contents[air.key] == 1
 
     def test_add_existing_item(self, player, air):
@@ -65,11 +67,11 @@ class TestBackpackItem(object):
     def test_use_item(self, player, candy):
         player.backpack.add(candy.key, 2)
         player.hp -= 100
-        player.backpack.use(0, player)
+        player.backpack.use(candy.key, player)
         assert player.backpack.contents[candy.key] == 1
         assert player.hp == 52.5
 
     def test_exhaust_item(self, player, candy):
         player.backpack.add(candy.key, 1)
-        player.backpack.use(0, player)
+        player.backpack.use(candy.key, player)
         assert len(player.backpack.contents) == 0
