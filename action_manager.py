@@ -135,7 +135,7 @@ class ActionManager(metaclass=Singleton):
         loot = [e for e in cls.dungeon.current_level.entities if e.pos == cls.player.pos and e.type == 'item']
 
         if loot:
-            cls.player.backpack.add(loot[0].key, 1)
+            cls.player.backpack.add(loot[0].key)
             cls.dungeon.current_level.entities.remove(loot[0])
             return True
         return False

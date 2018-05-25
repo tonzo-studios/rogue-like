@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
-
 from misc import Singleton
 
 
@@ -20,7 +18,7 @@ class Backpack(metaclass=Singleton):
         registry (Registry): A reference to the registry where it resides, so it can access items by key.
     """
 
-    contents = OrderedDict()
+    contents = {}
     cur_weight = 0.0
     max_weight = 100.0
 
@@ -33,7 +31,7 @@ class Backpack(metaclass=Singleton):
                 return True
         return False
 
-    def add(cls, item_key, qty):
+    def add(cls, item_key, qty=1):
         """
         Add the specified qty of item to the backpack's contents.
 
@@ -50,9 +48,9 @@ class Backpack(metaclass=Singleton):
             cls.contents[item_key] = qty
             cls.cur_weight += weight * qty
 
-    def use(cls, i, target):
+    def use(cls, item_key, target):
         """
-        Try to use the item at position i upon the specified target.
+        Try to use a certain item upon the specified target, if it exists in the backpack.
 
         If the usage is valid:
             * The item quantity is decreased by one if there's more than one of the item.
@@ -61,10 +59,15 @@ class Backpack(metaclass=Singleton):
             Nothing happens.
 
         Args:
-            i (int): Index of the item to be used.
+            item_key (Items): ID of the item to be used.
             target (Actor): Actor upon which to use the item's effect if any.
+
+        Raises:
+            ValueError: If the item doesn't exist in the inventory.
         """
-        item_key = list(cls.contents)[i]
+        if item_key not in cls.contents:
+            raise ValueError("Item not in the inventory.")
+
         item_object = cls.registry.get_item(item_key)
         used = item_object.use(target)
 
