@@ -75,3 +75,12 @@ class TestBackpackItem(object):
         player.backpack.add(candy.key, 1)
         player.backpack.use(candy.key, player)
         assert len(player.backpack.contents) == 0
+
+    def test_exists(self, player, candy):
+        assert not player.backpack.exists(candy.key)
+        player.backpack.add(candy.key)
+        assert player.backpack.exists(candy.key)
+
+    def test_use_nonexistent_item(self, player, candy):
+        with pytest.raises(ValueError):
+            player.backpack.use(candy.key, player)
