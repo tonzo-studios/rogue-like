@@ -80,6 +80,8 @@ class TestBackpackItem(object):
         assert not player.backpack.exists(candy.key)
         player.backpack.add(candy.key)
         assert player.backpack.exists(candy.key)
+        player.backpack.use(candy.key, player)
+        assert not player.backpack.exists(candy.key)
 
     def test_use_nonexistent_item(self, player, candy):
         with pytest.raises(ValueError):
