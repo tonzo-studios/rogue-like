@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""A behavior contains the logic of an entity, which takes place when that entity takes its turn in the game.
+
+Behaviors are functions which always have two arguments: the caller, which is the entity that takes the turn,
+and the target, which is some other object that the caller uses for its logic. The target could also be None.
+
+A behavior could define, for example, the AI of an Actor, or other types of logic like the spreading of fire.
+"""
 
 
 def basic_monster(caller, target):

@@ -130,7 +130,7 @@ class Registry(metaclass=Singleton):
                 effect_args = item.pop('effect_args')
                 if str_effect != '':
                     # Create the effect passing the required args
-                    real_effect = cls.effect.get(str_effect)(*literal_eval(effect_args))
+                    real_effect = partial(cls.effect.get(str_effect), *literal_eval(effect_args))
 
                 # Convert datatypes to the right ones
                 item['key'] = Items(int(item.get('key')))
@@ -155,7 +155,7 @@ class Registry(metaclass=Singleton):
             key (string): Name of the behavior class to retrieve.
 
         Returns:
-            Behavior: The behavior corresponding to the key, if found.
+            The behavior corresponding to the key, if found.
 
         Raises:
             BehaviorNotFoundError: If there's no behavior with the given key in the registry.
@@ -175,7 +175,7 @@ class Registry(metaclass=Singleton):
             key (string): Name of the effect class to retrieve.
 
         Returns:
-            Effect: The effect corresponding to the key, if found.
+            The effect corresponding to the key, if found, as a function with no args filled in yet.
 
         Raises:
             EffectNotFoundError: If there's no effect with the given key in the registry.

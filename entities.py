@@ -121,9 +121,6 @@ class Entity(ABC):
         The entity takes a turn, using the logic defined by its behavior.
         If the actor doesn't have a behavior, do nothing.
 
-        A behavior could define, for example, the AI of an Actor, or other types of logic like the spreading of
-        fire.
-
         Args:
              target (Entity): Target entity used by the behavior logic.
         """
@@ -158,7 +155,7 @@ class Item(Entity, Interactable):
     to their backpack first.
 
     Args:
-        effect (Effect): Triggered on item use, defaults to None for items with no effect.
+        effect: A function executed on item use, defaults to None for items with no effect.
         weight (float): Weight of the item, defaults to 1.0
     """
 
@@ -178,7 +175,8 @@ class Item(Entity, Interactable):
             bool: True if the effect was successfully used, False otherwise.
         """
         if self.effect is not None:
-            self.effect.take_effect(target)
+            # Execute the effect
+            self.effect(target)
             # If the item was used from an interaction in the map, remove it from the map
             if self.game_map is not None:
                 self.game_map.entities.remove(self)
