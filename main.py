@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import tdl
 
 from action_manager import ActionManager
-from behavior import NullBehavior
 from display_manager import DisplayManager
 from dungeon import Dungeon
 from entities import Actor
@@ -18,7 +16,7 @@ def main():
     registry = Registry()
 
     # Initialize player, display_manager
-    player = Actor(Actors.HERO, "Player", NullBehavior(), '@', Colors.WHITE, registry=registry)
+    player = Actor(Actors.HERO, "Player", '@', Colors.WHITE, behavior=None, registry=registry)
     # XXX: Give player level boost for testing purposes
     player.level = 10
 
@@ -46,7 +44,7 @@ def main():
 
         # Enemy turn
         for entity in dungeon.current_level.entities:
-            entity.behavior.take_turn(entity, player)
+            entity.take_turn(player)
 
         # Check for player death
         # TODO: Handle player death as a game state

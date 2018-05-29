@@ -4,7 +4,6 @@
 from abc import ABC, abstractmethod
 from math import floor
 
-from behavior import NullBehavior
 from misc import Colors, RenderPriority, message, Vector
 
 
@@ -48,6 +47,7 @@ class Entity(ABC):
         self.color = color
         self.blocks = blocks
         self.render_priority = render_priority
+        self.behavior = None
 
     def __repr__(self):
         return f"{self.key.name} '{self.name}' <{self.type}>@{self.pos}"
@@ -116,6 +116,20 @@ class Entity(ABC):
         if self.blocks:
             game_map.walkable[position] = False
 
+    def take_turn(self, target):
+        """
+        The entity takes a turn, using the logic defined by its behavior.
+        If the actor doesn't have a behavior, do nothing.
+
+        A behavior could define, for example, the AI of an Actor, or other types of logic like the spreading of
+        fire.
+
+        Args:
+             target (Entity): Target entity used by the behavior logic.
+        """
+        if self.behavior is not None:
+            self.behavior(self, target)
+
 
 class Interactable(ABC):
     """
@@ -150,7 +164,6 @@ class Item(Entity, Interactable):
 
     def __init__(self, key, name, char, color, blocks=False, effect=None, weight=1.0):
         super().__init__(key, name, 'item', char, color, blocks, RenderPriority.ITEM)
-        self.behavior = NullBehavior()
         self.effect = effect
         self.weight = weight
 
@@ -180,10 +193,12 @@ class Actor(Entity):
     An actor is an entity that can perform actions on its own.
 
     Args:
+        behavior: A function defining the actor's logic/AI, which consist of all the actions performed when it takes a
+            turn. Can be None, meaning the actor has no behavior and thus does nothing.
         registry (Registry): A reference to the game's registry. Only needed to instantiate the backpack.
     """
 
-    def __init__(self, key, name, behavior, char, color, registry=None):
+    def __init__(self, key, name, char, color, behavior, registry=None):
         super().__init__(key, name, 'actor', char, color, blocks=True, render_priority=RenderPriority.ACTOR)
         self.behavior = behavior
         # base stats
@@ -238,7 +253,7 @@ class Actor(Entity):
     def _die(self):
         """Become a corpse."""
         self.char = '%'
-        self.behavior = NullBehavior()
+        self.behavior = None
         self.color = Colors.RED
         self.name += " corpse"
         self.blocks = False
@@ -454,7 +469,6 @@ class Actor(Entity):
 class Stairs(Entity, Interactable, ABC):
     def __init__(self, name, char, dungeon):
         super().__init__(None, name, 'stairs', char, Colors.WHITE, False, RenderPriority.ACTOR)
-        self.behavior = NullBehavior()
         self.dungeon = dungeon
 
 

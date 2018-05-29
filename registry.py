@@ -9,6 +9,7 @@ from enum import Enum, unique
 from functools import partial
 
 import effects
+import behavior
 from backpack import Backpack
 from entities import Actor, Item
 from misc import Singleton
@@ -89,7 +90,7 @@ class Registry(metaclass=Singleton):
     @staticmethod
     def _load_module(module_name):
         def predicate(obj):
-            return inspect.isclass(obj) and obj.__module__ == module_name
+            return (inspect.isclass(obj) or inspect.isfunction(obj)) and obj.__module__ == module_name
 
         return inspect.getmembers(sys.modules[module_name], predicate)
 
@@ -105,14 +106,10 @@ class Registry(metaclass=Singleton):
 
             for actor in reader:
                 str_behavior = actor.get('behavior')
-                # If no behavior is specified, default to NullBehavior
-                if str_behavior == '':
-                    str_behavior = "NullBehavior"
-
-                real_behavior = cls.behaviors.get(str_behavior)
-                if real_behavior is None:
-                    # Incorrect behavior
-                    raise BehaviorNotFoundError(str_behavior)
+                # If no behavior is specified, default to null behavior
+                real_behavior = None
+                if str_behavior != '':
+                    real_behavior = cls.behaviors.get(str_behavior)
 
                 # Convert datatypes to the right ones
                 actor['key'] = Actors(int(actor.get('key')))

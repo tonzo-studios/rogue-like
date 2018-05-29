@@ -8,10 +8,9 @@ import pytest
 def player():
     from registry import Registry, Actors
     from entities import Actor
-    from behavior import NullBehavior
     # Player needs the registry to manage the backpack
     registry = Registry()
-    player = Actor(Actors.HERO, 'Player', NullBehavior(), '@', (255, 255, 255), registry=registry)
+    player = Actor(Actors.HERO, 'Player', '@', (255, 255, 255), behavior=None, registry=registry)
     player.backpack.clear()
     return player
 
