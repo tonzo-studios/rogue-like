@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import inspect
-import json
 import sys
+from ast import literal_eval
+from csv import DictReader
 from enum import Enum, unique
 from functools import partial
 
@@ -99,42 +100,49 @@ class Registry(metaclass=Singleton):
         cls.effect = dict(cls._load_module('effects'))
 
     def _load_actors(cls):
-        with open('actors.json', 'r') as f:
-            json_actors = json.load(f)
+        with open('actors.csv', 'r') as f:
+            reader = DictReader(f, delimiter=';')
 
-        mob_map = ('name', 'char', 'color')
+            for actor in reader:
+                str_behavior = actor.get('behavior')
+                # If no behavior is specified, default to NullBehavior
+                if str_behavior == '':
+                    str_behavior = "NullBehavior"
 
-        for key, mob_vals in json_actors.items():
-            json_behavior = mob_vals.pop()
-            real_behavior = cls.behaviors.get(json_behavior)
+                real_behavior = cls.behaviors.get(str_behavior)
+                if real_behavior is None:
+                    # Incorrect behavior
+                    raise BehaviorNotFoundError(str_behavior)
 
-            if real_behavior is None:
-                raise BehaviorNotFoundError(json_behavior)
+                # Convert datatypes to the right ones
+                actor['key'] = Actors(int(actor.get('key')))
+                actor['behavior'] = real_behavior
+                to_literal = ['color']
+                for arg in to_literal:
+                    actor[arg] = literal_eval(actor.get(arg))
 
-            mob_vals = dict(zip(mob_map, mob_vals))
-
-            cls.actors[Actors(int(key))] = partial(
-                Actor, behavior=real_behavior, **mob_vals)
+                cls.actors[actor['key']] = partial(Actor, **actor)
 
     def _load_items(cls):
-        with open('items.json', 'r') as f:
-            json_items = json.load(f)
+        with open('items.csv', 'r') as f:
+            reader = DictReader(f, delimiter=';')
 
-        mob_map = ('name', 'char', 'color')
-        item_map = (*mob_map, 'blocks', 'weight')
+            for item in reader:
+                str_effect = item.get('effect')
+                real_effect = None
+                effect_args = item.pop('effect_args')
+                if str_effect != '':
+                    # Create the effect passing the required args
+                    real_effect = cls.effect.get(str_effect)(*literal_eval(effect_args))
 
-        for key, item_vals in json_items.items():
-            json_effect_args = item_vals.pop()
-            json_effect = item_vals.pop()
-            real_effect = None
-            if json_effect is not None:
-                # Create the effect passing the required args
-                real_effect = cls.effect.get(json_effect)(*json_effect_args)
+                # Convert datatypes to the right ones
+                item['key'] = Items(int(item.get('key')))
+                item['effect'] = real_effect
+                to_literal = ['color', 'blocks', 'weight']
+                for arg in to_literal:
+                    item[arg] = literal_eval(item.get(arg))
 
-            item_vals = dict(zip(item_map, item_vals))
-
-            cls.items[Items(int(key))] = partial(
-                Item, effect=real_effect, **item_vals)
+                cls.items[item['key']] = partial(Item, **item)
 
     def load(cls):
         cls._load_behaviors()
@@ -200,7 +208,7 @@ class Registry(metaclass=Singleton):
         actor = cls.actors.get(key)
         if actor is None:
             raise ActorNotFoundError(key)
-        return actor(key=key)
+        return actor()
 
     def get_item(cls, key):
         """
@@ -220,4 +228,4 @@ class Registry(metaclass=Singleton):
         item = cls.items.get(key)
         if item is None:
             raise ItemNotFoundError(key)
-        return item(key=key)
+        return item()

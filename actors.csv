@@ -1,0 +1,4 @@
+key;name;char;color;behavior
+1;Orc;o;[0,255,0];BasicMonster
+2;Drake;D;[255,0,0];BasicMonster
+3;Poopy;p;[0,0,0];
