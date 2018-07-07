@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import tdl
+import pygame
+import sys
 
 from action_manager import ActionManager
 from display_manager import DisplayManager
@@ -9,6 +11,40 @@ from dungeon import Dungeon
 from entities import Actor
 from misc import Colors, message
 from registry import Registry, Actors
+
+
+def main_pygame():
+    # init
+    pygame.init()
+    pygame.display.set_caption("Project Sea")
+    screen = pygame.display.set_mode((240, 180))
+
+    player_sprite = pygame.image.load("sprites/potatohead.png")
+    cur_pos = (50, 50)
+    delta = 10
+
+    # main loop
+    while True:
+        # event handling
+        for ev in pygame.event.get():
+            if ev.type == pygame.QUIT:
+                break
+            elif ev.type == pygame.KEYDOWN:
+                if ev.key == pygame.K_LEFT:
+                    # move left
+                    cur_pos = (cur_pos[0] - delta, cur_pos[1])
+                elif ev.key == pygame.K_RIGHT:
+                    # move right
+                    cur_pos = (cur_pos[0] + delta, cur_pos[1])
+                elif ev.key == pygame.K_UP:
+                    # move up
+                    cur_pos = (cur_pos[0], cur_pos[1] - delta)
+                elif ev.key == pygame.K_DOWN:
+                    # move down
+                    cur_pos = (cur_pos[0], cur_pos[1] + delta)
+            screen.fill((0, 0, 0))
+            screen.blit(player_sprite, cur_pos)
+            pygame.display.flip()
 
 
 def main():
@@ -26,7 +62,6 @@ def main():
 
     # Initialize Display Manager
     display_manager = DisplayManager(player, dungeon)
-    message("Hello world!", Colors.RED)
 
     # Initialize Action Manager
     action_manager = ActionManager(player, dungeon)
@@ -55,4 +90,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[:1] == 'pygame':
+        main_pygame()
+    else:
+        main()

@@ -3,10 +3,10 @@
 
 import tdl
 import textwrap
+import pygame
 
 from entities import Stairs
 from misc import Singleton, Vector, Colors, get_abs_path
-from dungeon import Dungeon
 
 
 class DisplayManager(metaclass=Singleton):
@@ -37,20 +37,13 @@ class DisplayManager(metaclass=Singleton):
 
     game_msgs = []
 
-    def __init__(cls, player, dungeon):
-        # TODO: give consoles a better name
-        tdl.set_font(get_abs_path('lucida10x10_gs_tc.png'), greyscale=True, altLayout=True)
-        # TODO: Instead of using the level width, use views with fixed width
-        # FIXME: Since we don't have views yet, hardcode level width and height
-        # Initialize consoles
-        cls.console = tdl.Console(80, 40)
-        cls.panel = tdl.Console(cls.SCREEN_HEIGHT, cls.PANEL_HEIGHT)
-        cls.backpack = tdl.Console(cls.BACKPACK_WIDTH, cls.SCREEN_HEIGHT)
-        cls.root_console = tdl.init(cls.SCREEN_WIDTH, cls.SCREEN_HEIGHT, title=cls.GAME_TITLE,
-                                    fullscreen=False)
-        # Initialize references to other needed objects
-        cls.player = player
-        cls.dungeon = dungeon
+    def __init__(self, player, dungeon):
+        pygame.init()
+        pygame.display.set_caption(self.GAME_TITLE)
+        self.screen = pygame.display.set_mode((1600, 900))
+
+        self.player = player
+        self.dungeon = dungeon
 
     @classmethod
     def add_message(cls, new_msg, color=Colors.WHITE):
@@ -154,12 +147,19 @@ class DisplayManager(metaclass=Singleton):
         """
         Renders the current game map if necessary.
         """
+
+        sprites = {
+            'wall_light': pygame.image.load("sprites/wall_light.png"),
+            'wall_dark': pygame.image.load("sprites/wall_dark.png"),
+            'floor_light': pygame.image.load("sprites/floor_light.png"),
+            'floor_dark': pygame.image.load("sprites/floor_dark.png"),
+        }
+
         cur_map = cls.dungeon.current_level
         if cls.dungeon.fov_recomputed:
             cls.dungeon.fov_recomputed = False
 
-            # First clear the old console before re-draw
-            cls.console.clear(fg=Colors.WHITE, bg=Colors.BLACK)
+            cls.screen.fill(Colors.BLACK)
 
             for x in range(cur_map.width):
                 for y in range(cur_map.height):
@@ -169,13 +169,9 @@ class DisplayManager(metaclass=Singleton):
                     # If position is visible, draw a bright tile
                     if cur_map.fov[pos]:
                         if wall:
-                            cls.console.draw_char(
-                                x, y, None, fg=None, bg=Colors.WALL_VISIBLE
-                            )
+                            cls.screen.blit(sprites['wall_light'], (x*16, y*16))
                         else:
-                            cls.console.draw_char(
-                                x, y, None, fg=None, bg=Colors.GROUND_VISIBLE
-                            )
+                            cls.screen.blit(sprites['floor_light'], (x*16, y*16))
                         # Tiles in FOV will be remembered after they get out
                         # of sight, out of mind :^)
                         cur_map.explored[pos] = True
@@ -183,13 +179,9 @@ class DisplayManager(metaclass=Singleton):
                     # Position is not visible, but has been explored before
                     elif cur_map.explored[pos]:
                         if wall:
-                            cls.console.draw_char(
-                                x, y, None, fg=None, bg=Colors.WALL_DARK
-                            )
+                            cls.screen.blit(sprites['wall_dark'], (x*16, y*16))
                         else:
-                            cls.console.draw_char(
-                                x, y, None, fg=None, bg=Colors.GROUND_DARK
-                            )
+                            cls.screen.blit(sprites['floor_dark'], (x*16, y*16))
 
     def _render_entities(cls):
         """
@@ -270,7 +262,9 @@ class DisplayManager(metaclass=Singleton):
             5. Display everything that's been rendered to the screen.
             6. Prepare for the next call (flushing and clearing).
         """
-        cls._display_game()
-        cls._display_ui()
-        tdl.flush()
-        cls._clear_all()
+        cls._render_map()
+        pygame.display.flip()
+        # cls._display_game()
+        # cls._display_ui()
+        # tdl.flush()
+        # cls._clear_all()
