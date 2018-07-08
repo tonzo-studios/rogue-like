@@ -40,7 +40,18 @@ class DisplayManager(metaclass=Singleton):
     def __init__(self, player, dungeon):
         pygame.init()
         pygame.display.set_caption(self.GAME_TITLE)
-        self.screen = pygame.display.set_mode((1600, 900))
+        self.screen = pygame.display.set_mode((1600, 900), pygame.DOUBLEBUF)
+        self.screen.set_alpha(None)
+
+        self.sprites = {
+            'wall_light': pygame.image.load("sprites/wall_light.png").convert(),
+            'wall_dark': pygame.image.load("sprites/wall_dark.png").convert(),
+            'floor_light': pygame.image.load("sprites/floor_light.png").convert(),
+            'floor_dark': pygame.image.load("sprites/floor_dark.png").convert(),
+        }
+
+        self.static = pygame.sprite.Group()
+        self.entities = pygame.sprite.Group()
 
         self.player = player
         self.dungeon = dungeon
@@ -148,18 +159,9 @@ class DisplayManager(metaclass=Singleton):
         Renders the current game map if necessary.
         """
 
-        sprites = {
-            'wall_light': pygame.image.load("sprites/wall_light.png"),
-            'wall_dark': pygame.image.load("sprites/wall_dark.png"),
-            'floor_light': pygame.image.load("sprites/floor_light.png"),
-            'floor_dark': pygame.image.load("sprites/floor_dark.png"),
-        }
-
         cur_map = cls.dungeon.current_level
         if cls.dungeon.fov_recomputed:
             cls.dungeon.fov_recomputed = False
-
-            cls.screen.fill(Colors.BLACK)
 
             for x in range(cur_map.width):
                 for y in range(cur_map.height):
@@ -169,9 +171,9 @@ class DisplayManager(metaclass=Singleton):
                     # If position is visible, draw a bright tile
                     if cur_map.fov[pos]:
                         if wall:
-                            cls.screen.blit(sprites['wall_light'], (x*16, y*16))
+                            cls.static.add(Sprite(cls.sprites['wall_light'], x*16, y*16))
                         else:
-                            cls.screen.blit(sprites['floor_light'], (x*16, y*16))
+                            cls.static.add(Sprite(cls.sprites['floor_light'], x*16, y*16))
                         # Tiles in FOV will be remembered after they get out
                         # of sight, out of mind :^)
                         cur_map.explored[pos] = True
@@ -179,9 +181,9 @@ class DisplayManager(metaclass=Singleton):
                     # Position is not visible, but has been explored before
                     elif cur_map.explored[pos]:
                         if wall:
-                            cls.screen.blit(sprites['wall_dark'], (x*16, y*16))
+                            cls.static.add(Sprite(cls.sprites['wall_dark'], x*16, y*16))
                         else:
-                            cls.screen.blit(sprites['floor_dark'], (x*16, y*16))
+                            cls.static.add(Sprite(cls.sprites['floor_dark'], x*16, y*16))
 
     def _render_entities(cls):
         """
@@ -191,17 +193,11 @@ class DisplayManager(metaclass=Singleton):
                                  key=lambda x: x.render_priority.value)
         for entity in entities_sorted:
             # Draw visible entities
-            if cls.dungeon.current_level.fov[entity.pos]:
-                cls.console.draw_char(
-                    entity.pos.x, entity.pos.y, entity.char, entity.color,
-                    bg=None
-                )
+            if cls.dungeon.current_level.fov[entity.pos] and not isinstance(entity.sprite, str):
+                cls.entities.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
             # Remember stairs location
-            if isinstance(entity, Stairs) and cls.dungeon.current_level.explored[entity.pos]:
-                cls.console.draw_char(
-                    entity.pos.x, entity.pos.y, entity.char, entity.color,
-                    bg=None
-                )
+            # if isinstance(entity, Stairs) and cls.dungeon.current_level.explored[entity.pos]:
+                # cls.entities.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
 
     def _display_game(cls):
         """
@@ -238,10 +234,7 @@ class DisplayManager(metaclass=Singleton):
         """
         Clears all of the entities in the current game map from the buffer console.
         """
-        for entity in cls.dungeon.current_level.entities:
-            cls.console.draw_char(
-                entity.pos.x, entity.pos.y, ' ', entity.color, bg=None
-            )
+        cls.entities = pygame.sprite.Group()
 
     def _clear_all(cls):
         """
@@ -263,8 +256,22 @@ class DisplayManager(metaclass=Singleton):
             6. Prepare for the next call (flushing and clearing).
         """
         cls._render_map()
-        pygame.display.flip()
+        cls.static.draw(cls.screen)
+        cls._render_entities()
+        cls.entities.draw(cls.screen)
+        pygame.display.update()
+        cls._clear_entities()
         # cls._display_game()
         # cls._display_ui()
         # tdl.flush()
         # cls._clear_all()
+
+
+class Sprite(pygame.sprite.Sprite):
+
+    def __init__(self, image, x, y):
+        super().__init__()
+        self.image = image
+        self.rect = self.image.get_rect()  # get rekt
+        self.rect.x = x
+        self.rect.y = y

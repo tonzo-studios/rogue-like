@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import pygame
+
 from abc import ABC, abstractmethod
 from math import floor
 
@@ -39,11 +41,14 @@ class Entity(ABC):
     game_map = None
 
     @abstractmethod
-    def __init__(self, key, name, type, char, color, blocks, render_priority):
+    def __init__(self, key, name, type, sprite, color, blocks, render_priority):
         self.key = key
         self.name = name
         self.type = type
-        self.char = char
+        try:
+            self.sprite = pygame.image.load(sprite)
+        except Exception:
+            self.sprite = sprite
         self.color = color
         self.blocks = blocks
         self.render_priority = render_priority
@@ -196,8 +201,8 @@ class Actor(Entity):
         registry (Registry): A reference to the game's registry. Only needed to instantiate the backpack.
     """
 
-    def __init__(self, key, name, char, color, behavior, registry=None):
-        super().__init__(key, name, 'actor', char, color, blocks=True, render_priority=RenderPriority.ACTOR)
+    def __init__(self, key, name, sprite, color, behavior, registry=None):
+        super().__init__(key, name, 'actor', sprite, color, blocks=True, render_priority=RenderPriority.ACTOR)
         self.behavior = behavior
         # base stats
         self._strength = 5

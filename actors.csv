@@ -1,4 +1,2 @@
-key;name;char;color;behavior
-1;Orc;o;[0,255,0];basic_monster
-2;Drake;D;[255,0,0];basic_monster
-3;Poopy;p;[0,0,0];
+key;name;sprite;color;behavior
+1;Orc;sprites/orc.png;[0,255,0];basic_monster

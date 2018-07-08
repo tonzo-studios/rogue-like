@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tdl
+import pygame
 
 from entities import Interactable
 from misc import Singleton, Vector
@@ -34,12 +35,11 @@ class ActionManager(metaclass=Singleton):
         """
         Detect and register user input.
         """
-        for event in tdl.event.get():
-            if event.type == 'KEYDOWN':
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
                 cls.user_input = event
                 return
-        else:
-            cls.user_input = None
+        cls.user_input = None
 
     def handle_key_input(cls):
         """
@@ -52,17 +52,17 @@ class ActionManager(metaclass=Singleton):
         if not cls.user_input:
             return False
 
-        key_char = cls.user_input.char
+        key_char = cls.user_input.unicode
 
         move_direction = None
         # Vertical and horizontal movement
-        if cls.user_input.key == 'UP' or key_char == 'k':
+        if cls.user_input.key == pygame.K_UP or key_char == 'k':
             move_direction = Vector(0, -1)
-        elif cls.user_input.key == 'DOWN' or key_char == 'j':
+        elif cls.user_input.key == pygame.K_DOWN or key_char == 'j':
             move_direction = Vector(0, 1)
-        elif cls.user_input.key == 'LEFT' or key_char == 'h':
+        elif cls.user_input.key == pygame.K_LEFT or key_char == 'h':
             move_direction = Vector(-1, 0)
-        elif cls.user_input.key == 'RIGHT' or key_char == 'l':
+        elif cls.user_input.key == pygame.K_RIGHT or key_char == 'l':
             move_direction = Vector(1, 0)
 
         # Diagonal movement
@@ -79,20 +79,20 @@ class ActionManager(metaclass=Singleton):
         if move_direction is not None:
             return cls.movement_action(move_direction)
 
-        if cls.user_input.key == 'ENTER' and cls.user_input.alt:
+        if cls.user_input.key == pygame.K_ENTER and cls.user_input.alt:
             # Alt+Enter: toggle fullscreen
             tdl.set_fullscreen(not tdl.get_fullscreen())
             return False
 
-        elif cls.user_input.key == 'ESCAPE':
+        elif cls.user_input.key == pygame.K_ESCAPE:
             # Exit game
             # TODO: Find more elegant way to terminate the program
             exit()
 
-        elif cls.user_input.char == 'g':
+        elif key_char == 'g':
             return cls.pickup_action()
 
-        elif cls.user_input.char == 'e':
+        elif key_char == 'e':
             return cls.interact_action()
 
         else:

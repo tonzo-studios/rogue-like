@@ -283,8 +283,6 @@ class Level:
             dice = randint(0, 2)
             if dice == 0:
                 ent = registry.get_actor(Actors.ORC)
-            elif dice == 1:
-                ent = registry.get_actor(Actors.POOPY)
             else:
                 ent = registry.get_item(Items.CANDY)
 
