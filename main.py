@@ -13,23 +13,6 @@ from misc import Colors, message
 from registry import Registry, Actors
 
 
-def main_pygame():
-    # init
-    pygame.init()
-    pygame.display.set_caption("Project Sea")
-    screen = pygame.display.set_mode((240, 180))
-
-    cur_pos = (50, 50)
-    delta = 16
-
-    # main loop
-    while True:
-        # event handling
-            screen.fill((0, 0, 0))
-            screen.blit(player_sprite, cur_pos)
-            pygame.display.flip()
-
-
 def main():
     # First of all, load the registry
     registry = Registry()
@@ -73,11 +56,9 @@ def main():
             print("You died!")
             return 0
 
+        # Wait 60 frames before next loop iteration
         clock.tick(60)
 
 
 if __name__ == "__main__":
-    if sys.argv[:1] == 'pygame':
-        main_pygame()
-    else:
-        main()
+    main()

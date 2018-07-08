@@ -196,8 +196,8 @@ class DisplayManager(metaclass=Singleton):
             if cls.dungeon.current_level.fov[entity.pos] and not isinstance(entity.sprite, str):
                 cls.entities.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
             # Remember stairs location
-            # if isinstance(entity, Stairs) and cls.dungeon.current_level.explored[entity.pos]:
-                # cls.entities.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
+            if isinstance(entity, Stairs) and cls.dungeon.current_level.explored[entity.pos]:
+                cls.entities.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
 
     def _display_game(cls):
         """
@@ -255,12 +255,13 @@ class DisplayManager(metaclass=Singleton):
             5. Display everything that's been rendered to the screen.
             6. Prepare for the next call (flushing and clearing).
         """
+        cls.entities = pygame.sprite.Group()
+        cls.static = pygame.sprite.Group()
         cls._render_map()
         cls.static.draw(cls.screen)
         cls._render_entities()
         cls.entities.draw(cls.screen)
         pygame.display.update()
-        cls._clear_entities()
         # cls._display_game()
         # cls._display_ui()
         # tdl.flush()

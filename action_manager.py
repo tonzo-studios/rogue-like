@@ -79,9 +79,9 @@ class ActionManager(metaclass=Singleton):
         if move_direction is not None:
             return cls.movement_action(move_direction)
 
-        if cls.user_input.key == pygame.K_ENTER and cls.user_input.alt:
+        if cls.user_input.key == pygame.K_RETURN and pygame.key.get_mods() & pygame.KMOD_ALT:
             # Alt+Enter: toggle fullscreen
-            tdl.set_fullscreen(not tdl.get_fullscreen())
+            pygame.display.toggle_fullscreen()
             return False
 
         elif cls.user_input.key == pygame.K_ESCAPE:

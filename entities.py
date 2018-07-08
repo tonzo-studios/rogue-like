@@ -48,7 +48,8 @@ class Entity(ABC):
         try:
             self.sprite = pygame.image.load(sprite)
         except Exception:
-            self.sprite = sprite
+            self.sprite = pygame.Surface([16, 16])
+            self.sprite.fill(color)
         self.color = color
         self.blocks = blocks
         self.render_priority = render_priority
@@ -257,7 +258,7 @@ class Actor(Entity):
         """Become a corpse."""
         self.char = '%'
         self.behavior = None
-        self.color = Colors.RED
+        self.sprite.fill(Colors.RED)
         self.name += " corpse"
         self.blocks = False
         self.render_priority = RenderPriority.CORPSE
