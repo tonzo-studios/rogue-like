@@ -3,16 +3,19 @@
 
 import inspect
 import sys
+import pygame
+import os
+import behavior  # noqa
+import effects   # noqa
+
 from ast import literal_eval
 from csv import DictReader
 from enum import Enum, unique
 from functools import partial
 
-import effects
-import behavior
 from backpack import Backpack
 from entities import Actor, Item
-from misc import Singleton
+from misc import Singleton, get_abs_path, Colors
 
 
 @unique
@@ -43,8 +46,8 @@ class RegistryNotInitializedError(RegistryError):
 
 class BehaviorNotFoundError(RegistryError):
 
-    def __init__(self, behavior):
-        super().__init__(f"The behavior '{behavior}' was not found in the registry.")
+    def __init__(self, _behavior):
+        super().__init__(f"The behavior '{_behavior}' was not found in the registry.")
 
 
 class EffectNotFoundError(RegistryError):
@@ -67,15 +70,24 @@ class ItemNotFoundError(RegistryError):
 
 class Registry(metaclass=Singleton):
     """
-    The registry contains info about most classes in the game, serving as a factory for things like actors and items.
+    The registry contains info about most classes in the game, serving as a factory for things
+    like actors and items.
 
-    The registry is a singleton, and loads all the needed information from json files upon creation. All data remains
-    loaded in the registry until the game is closed.
+    The registry is a singleton, and loads all the needed information from json files upon
+    creation. All data remains loaded in the registry until the game is closed.
     """
     behaviors = {}
     effect = {}
     actors = {}
     items = {}
+    # TODO: get_abs_path()
+    sprites = {
+        'wall_light': pygame.image.load("sprites/wall_light.png"),
+        'wall_dark': pygame.image.load("sprites/wall_dark.png"),
+        'floor_light': pygame.image.load("sprites/floor_light.png"),
+        'floor_dark': pygame.image.load("sprites/floor_dark.png"),
+        'player': pygame.image.load("sprites/potatohead.png"),
+    }
     loaded = False
 
     def __init__(cls):
@@ -86,12 +98,15 @@ class Registry(metaclass=Singleton):
         # Initialize other variables stored in the registry
         cls.backpack = Backpack(cls)
         cls.loaded = True
+        cls.player = Actor(Actors.HERO, "Player", cls.sprites['player'], Colors.WHITE, None, cls)
+        # XXX: For testing purposes
+        cls.player.level = 10
 
     @staticmethod
     def _load_module(module_name):
         def predicate(obj):
-            return (inspect.isclass(obj) or inspect.isfunction(obj)) and obj.__module__ == module_name
-
+            return (inspect.isclass(obj)
+                    or inspect.isfunction(obj)) and obj.__module__ == module_name
         return inspect.getmembers(sys.modules[module_name], predicate)
 
     def _load_behaviors(cls):
@@ -99,6 +114,11 @@ class Registry(metaclass=Singleton):
 
     def _load_effects(cls):
         cls.effect = dict(cls._load_module('effects'))
+
+    def _load_sprite(cls, entity):
+        sprite = pygame.image.load(get_abs_path(os.path.join('sprites', entity['sprite'])))
+        cls.sprites[entity['name']] = sprite
+        entity['sprite'] = sprite
 
     def _load_actors(cls):
         with open('actors.csv', 'r') as f:
@@ -117,6 +137,8 @@ class Registry(metaclass=Singleton):
                 to_literal = ['color']
                 for arg in to_literal:
                     actor[arg] = literal_eval(actor.get(arg))
+
+                cls._load_sprite(actor)
 
                 cls.actors[actor['key']] = partial(Actor, **actor)
 
@@ -175,7 +197,7 @@ class Registry(metaclass=Singleton):
             key (string): Name of the effect class to retrieve.
 
         Returns:
-            The effect corresponding to the key, if found, as a function with no args filled in yet.
+            The effect corresponding to the key, if found, as a partial function.
 
         Raises:
             EffectNotFoundError: If there's no effect with the given key in the registry.
@@ -226,3 +248,6 @@ class Registry(metaclass=Singleton):
         if item is None:
             raise ItemNotFoundError(key)
         return item()
+
+
+registry = Registry()

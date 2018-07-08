@@ -18,9 +18,7 @@ def main():
     registry = Registry()
 
     # Initialize player, display_manager
-    player = Actor(Actors.HERO, "Player", "sprites/potatohead.png", Colors.WHITE, behavior=None, registry=registry)
-    # XXX: Give player level boost for testing purposes
-    player.level = 10
+    player = registry.player
 
     # Initialize Dungeon
     dungeon = Dungeon()

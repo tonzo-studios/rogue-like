@@ -42,16 +42,6 @@ class DisplayManager(metaclass=Singleton):
         self.screen = pygame.display.set_mode((1600, 900), pygame.DOUBLEBUF)
         self.screen.set_alpha(None)
 
-        self.sprites = {
-            'wall_light': pygame.image.load("sprites/wall_light.png").convert(),
-            'wall_dark': pygame.image.load("sprites/wall_dark.png").convert(),
-            'floor_light': pygame.image.load("sprites/floor_light.png").convert(),
-            'floor_dark': pygame.image.load("sprites/floor_dark.png").convert(),
-        }
-
-        self.static = pygame.sprite.Group()
-        self.entities = pygame.sprite.Group()
-
         self.player = player
         self.dungeon = dungeon
 
@@ -157,6 +147,7 @@ class DisplayManager(metaclass=Singleton):
         """
         Renders the current game map if necessary.
         """
+        import registry
 
         sprites = pygame.sprite.Group()
 
@@ -172,9 +163,9 @@ class DisplayManager(metaclass=Singleton):
                 # If position is visible, draw a bright tile
                 if cur_map.fov[pos]:
                     if wall:
-                        sprites.add(Sprite(cls.sprites['wall_light'], x*16, y*16))
+                        sprites.add(Sprite(registry.registry.sprites['wall_light'], x*16, y*16))
                     else:
-                        sprites.add(Sprite(cls.sprites['floor_light'], x*16, y*16))
+                        sprites.add(Sprite(registry.registry.sprites['floor_light'], x*16, y*16))
                     # Tiles in FOV will be remembered after they get out
                     # of sight, out of mind :^)
                     cur_map.explored[pos] = True
@@ -182,9 +173,9 @@ class DisplayManager(metaclass=Singleton):
                 # Position is not visible, but has been explored before
                 elif cur_map.explored[pos]:
                     if wall:
-                        sprites.add(Sprite(cls.sprites['wall_dark'], x*16, y*16))
+                        sprites.add(Sprite(registry.registry.sprites['wall_dark'], x*16, y*16))
                     else:
-                        sprites.add(Sprite(cls.sprites['floor_dark'], x*16, y*16))
+                        sprites.add(Sprite(registry.registry.sprites['floor_dark'], x*16, y*16))
         sprites.draw(cls.screen)
 
     def _render_entities(cls):

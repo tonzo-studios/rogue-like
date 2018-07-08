@@ -1,2 +1,2 @@
 key;name;sprite;color;behavior
-1;Orc;sprites/orc.png;[0,255,0];basic_monster
+1;Orc;orc.png;[0,255,0];basic_monster

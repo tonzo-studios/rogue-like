@@ -45,11 +45,12 @@ class Entity(ABC):
         self.key = key
         self.name = name
         self.type = type
-        try:
-            self.sprite = pygame.image.load(sprite)
-        except Exception:
+        # TODO: Make this simpler / deprecate when fully using sprites
+        if sprite is None:
             self.sprite = pygame.Surface([16, 16])
             self.sprite.fill(color)
+        else:
+            self.sprite = sprite
         self.color = color
         self.blocks = blocks
         self.render_priority = render_priority
@@ -258,6 +259,7 @@ class Actor(Entity):
         """Become a corpse."""
         self.char = '%'
         self.behavior = None
+        self.sprite = pygame.Surface([16, 16])
         self.sprite.fill(Colors.RED)
         self.name += " corpse"
         self.blocks = False
@@ -471,14 +473,14 @@ class Actor(Entity):
 
 
 class Stairs(Entity, Interactable, ABC):
-    def __init__(self, name, char, dungeon):
-        super().__init__(None, name, 'stairs', char, Colors.WHITE, False, RenderPriority.ACTOR)
+    def __init__(self, name, sprite, dungeon):
+        super().__init__(None, name, 'stairs', sprite, Colors.WHITE, False, RenderPriority.ACTOR)
         self.dungeon = dungeon
 
 
 class StairsUp(Stairs):
     def __init__(self, dungeon):
-        super().__init__("Stairs up", '<', dungeon)
+        super().__init__("Stairs up", None, dungeon)
 
     def use(self, target):
         """
@@ -493,7 +495,7 @@ class StairsUp(Stairs):
 
 class StairsDown(Stairs):
     def __init__(self, dungeon):
-        super().__init__("Stairs down", '>', dungeon)
+        super().__init__("Stairs down", None, dungeon)
 
     def use(self, target):
         """
