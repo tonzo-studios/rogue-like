@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import tdl
 import textwrap
 import pygame
 
@@ -159,45 +158,53 @@ class DisplayManager(metaclass=Singleton):
         Renders the current game map if necessary.
         """
 
+        sprites = pygame.sprite.Group()
+
         cur_map = cls.dungeon.current_level
-        if cls.dungeon.fov_recomputed:
-            cls.dungeon.fov_recomputed = False
+        # if cls.dungeon.fov_recomputed:
+            # cls.dungeon.fov_recomputed = False
 
-            for x in range(cur_map.width):
-                for y in range(cur_map.height):
-                    pos = Vector(x, y)
-                    wall = not cur_map.transparent[pos]
+        for x in range(cur_map.width):
+            for y in range(cur_map.height):
+                pos = Vector(x, y)
+                wall = not cur_map.transparent[pos]
 
-                    # If position is visible, draw a bright tile
-                    if cur_map.fov[pos]:
-                        if wall:
-                            cls.static.add(Sprite(cls.sprites['wall_light'], x*16, y*16))
-                        else:
-                            cls.static.add(Sprite(cls.sprites['floor_light'], x*16, y*16))
-                        # Tiles in FOV will be remembered after they get out
-                        # of sight, out of mind :^)
-                        cur_map.explored[pos] = True
+                # If position is visible, draw a bright tile
+                if cur_map.fov[pos]:
+                    if wall:
+                        sprites.add(Sprite(cls.sprites['wall_light'], x*16, y*16))
+                    else:
+                        sprites.add(Sprite(cls.sprites['floor_light'], x*16, y*16))
+                    # Tiles in FOV will be remembered after they get out
+                    # of sight, out of mind :^)
+                    cur_map.explored[pos] = True
 
-                    # Position is not visible, but has been explored before
-                    elif cur_map.explored[pos]:
-                        if wall:
-                            cls.static.add(Sprite(cls.sprites['wall_dark'], x*16, y*16))
-                        else:
-                            cls.static.add(Sprite(cls.sprites['floor_dark'], x*16, y*16))
+                # Position is not visible, but has been explored before
+                elif cur_map.explored[pos]:
+                    if wall:
+                        sprites.add(Sprite(cls.sprites['wall_dark'], x*16, y*16))
+                    else:
+                        sprites.add(Sprite(cls.sprites['floor_dark'], x*16, y*16))
+        sprites.draw(cls.screen)
 
     def _render_entities(cls):
         """
         Render visible entities by render layer to the buffer console.
         """
+        sprites = pygame.sprite.Group()
+
         entities_sorted = sorted(cls.dungeon.current_level.entities,
                                  key=lambda x: x.render_priority.value)
+
         for entity in entities_sorted:
             # Draw visible entities
             if cls.dungeon.current_level.fov[entity.pos] and not isinstance(entity.sprite, str):
-                cls.entities.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
+                sprites.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
             # Remember stairs location
             if isinstance(entity, Stairs) and cls.dungeon.current_level.explored[entity.pos]:
-                cls.entities.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
+                sprites.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
+
+        sprites.draw(cls.screen)
 
     def _display_game(cls):
         """
@@ -255,12 +262,9 @@ class DisplayManager(metaclass=Singleton):
             5. Display everything that's been rendered to the screen.
             6. Prepare for the next call (flushing and clearing).
         """
-        cls.entities = pygame.sprite.Group()
-        cls.static = pygame.sprite.Group()
+        cls.screen.fill((0, 0, 0))
         cls._render_map()
-        cls.static.draw(cls.screen)
         cls._render_entities()
-        cls.entities.draw(cls.screen)
         pygame.display.update()
         # cls._display_game()
         # cls._display_ui()
