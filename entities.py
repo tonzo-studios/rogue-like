@@ -30,7 +30,7 @@ class Entity(ABC):
         name (str): A name for the entity, doesn't have to be unique.
         type (str): Pseudo-type of this entity, can be one of 'player', 'npc',
             'enemy', 'item', ...
-        char (str): How the entity will be visually displayed.
+        sprite (str): How the entity will be visually displayed.
         color (Colors): Color of the character that visually represents this entity.
         blocks (bool): Whether this entity is blocking or not.
         render_priority (RenderPriority): At what layer should this entity be
@@ -166,8 +166,8 @@ class Item(Entity, Interactable):
         weight (float): Weight of the item, defaults to 1.0
     """
 
-    def __init__(self, key, name, char, color, blocks=False, effect=None, weight=1.0):
-        super().__init__(key, name, 'item', char, color, blocks, RenderPriority.ITEM)
+    def __init__(self, key, name, sprite, color, blocks=False, effect=None, weight=1.0):
+        super().__init__(key, name, 'item', sprite, color, blocks, RenderPriority.ITEM)
         self.effect = effect
         self.weight = weight
 
@@ -257,7 +257,6 @@ class Actor(Entity):
 
     def _die(self):
         """Become a corpse."""
-        self.char = '%'
         self.behavior = None
         self.sprite = pygame.Surface([16, 16])
         self.sprite.fill(Colors.RED)

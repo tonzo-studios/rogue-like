@@ -116,7 +116,12 @@ class Registry(metaclass=Singleton):
         cls.effect = dict(cls._load_module('effects'))
 
     def _load_sprite(cls, entity):
-        sprite = pygame.image.load(get_abs_path(os.path.join('sprites', entity['sprite'])))
+        # TODO: Make this simpler / deprecate when fully using sprites
+        try:
+            sprite = pygame.image.load(get_abs_path(os.path.join('sprites', entity['sprite'])))
+        except Exception:
+            sprite = pygame.Surface([16, 16])
+            sprite.fill(entity['color'])
         cls.sprites[entity['name']] = sprite
         entity['sprite'] = sprite
 
@@ -160,6 +165,8 @@ class Registry(metaclass=Singleton):
                 to_literal = ['color', 'blocks', 'weight']
                 for arg in to_literal:
                     item[arg] = literal_eval(item.get(arg))
+
+                cls._load_sprite(item)
 
                 cls.items[item['key']] = partial(Item, **item)
 

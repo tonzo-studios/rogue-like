@@ -28,7 +28,7 @@ def main():
     display_manager = DisplayManager(player, dungeon)
 
     # Initialize Action Manager
-    action_manager = ActionManager(player, dungeon)
+    action_manager = ActionManager(player, dungeon, display_manager)
 
     clock = pygame.time.Clock()
 

@@ -20,8 +20,9 @@ class DisplayManager(metaclass=Singleton):
     effectively performing an update to the latest game state
     """
     # TODO: move these to an appropriate, globally-accessible place
-    SCREEN_WIDTH = 100
-    SCREEN_HEIGHT = 50
+    SCREEN_WIDTH = 1600
+    SCREEN_HEIGHT = 900
+    TILE_SIZE = 16
     GAME_TITLE = "Tonzo Studios Roguelike"
 
     BAR_WIDTH = 20
@@ -39,11 +40,13 @@ class DisplayManager(metaclass=Singleton):
     def __init__(self, player, dungeon):
         pygame.init()
         pygame.display.set_caption(self.GAME_TITLE)
-        self.screen = pygame.display.set_mode((1600, 900), pygame.DOUBLEBUF)
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT),
+                                              pygame.DOUBLEBUF)
         self.screen.set_alpha(None)
 
         self.player = player
         self.dungeon = dungeon
+        self.zoom_level = 1
 
     @classmethod
     def add_message(cls, new_msg, color=Colors.WHITE):
@@ -152,8 +155,6 @@ class DisplayManager(metaclass=Singleton):
         sprites = pygame.sprite.Group()
 
         cur_map = cls.dungeon.current_level
-        # if cls.dungeon.fov_recomputed:
-            # cls.dungeon.fov_recomputed = False
 
         for x in range(cur_map.width):
             for y in range(cur_map.height):
@@ -163,9 +164,17 @@ class DisplayManager(metaclass=Singleton):
                 # If position is visible, draw a bright tile
                 if cur_map.fov[pos]:
                     if wall:
-                        sprites.add(Sprite(registry.registry.sprites['wall_light'], x*16, y*16))
+                        sprites.add(Sprite(
+                            registry.registry.sprites['wall_light'],
+                            x*cls.TILE_SIZE,
+                            y*cls.TILE_SIZE,
+                        ))
                     else:
-                        sprites.add(Sprite(registry.registry.sprites['floor_light'], x*16, y*16))
+                        sprites.add(Sprite(
+                            registry.registry.sprites['floor_light'],
+                            x*cls.TILE_SIZE,
+                            y*cls.TILE_SIZE,
+                        ))
                     # Tiles in FOV will be remembered after they get out
                     # of sight, out of mind :^)
                     cur_map.explored[pos] = True
@@ -173,9 +182,17 @@ class DisplayManager(metaclass=Singleton):
                 # Position is not visible, but has been explored before
                 elif cur_map.explored[pos]:
                     if wall:
-                        sprites.add(Sprite(registry.registry.sprites['wall_dark'], x*16, y*16))
+                        sprites.add(Sprite(
+                            registry.registry.sprites['wall_dark'],
+                            x*cls.TILE_SIZE,
+                            y*cls.TILE_SIZE,
+                        ))
                     else:
-                        sprites.add(Sprite(registry.registry.sprites['floor_dark'], x*16, y*16))
+                        sprites.add(Sprite(
+                            registry.registry.sprites['floor_dark'],
+                            x*cls.TILE_SIZE,
+                            y*cls.TILE_SIZE,
+                        ))
         sprites.draw(cls.screen)
 
     def _render_entities(cls):
@@ -189,11 +206,19 @@ class DisplayManager(metaclass=Singleton):
 
         for entity in entities_sorted:
             # Draw visible entities
-            if cls.dungeon.current_level.fov[entity.pos] and not isinstance(entity.sprite, str):
-                sprites.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
+            if cls.dungeon.current_level.fov[entity.pos]:
+                sprites.add(Sprite(
+                    entity.sprite,
+                    entity.pos.x*cls.TILE_SIZE,
+                    entity.pos.y*cls.TILE_SIZE,
+                ))
             # Remember stairs location
             if isinstance(entity, Stairs) and cls.dungeon.current_level.explored[entity.pos]:
-                sprites.add(Sprite(entity.sprite, entity.pos.x*16, entity.pos.y*16))
+                sprites.add(Sprite(
+                    entity.sprite,
+                    entity.pos.x*cls.TILE_SIZE,
+                    entity.pos.y*cls.TILE_SIZE,
+                ))
 
         sprites.draw(cls.screen)
 

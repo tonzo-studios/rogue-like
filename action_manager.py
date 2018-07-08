@@ -27,9 +27,10 @@ class ActionManager(metaclass=Singleton):
 
     player = dungeon = user_input = display_manager = None
 
-    def __init__(cls, player, dungeon):
+    def __init__(cls, player, dungeon, display_manager):
         cls.player = player
         cls.dungeon = dungeon
+        cls.display_manager = display_manager
 
     def get_user_input(cls):
         """
@@ -94,6 +95,12 @@ class ActionManager(metaclass=Singleton):
 
         elif key_char == 'e':
             return cls.interact_action()
+
+        elif cls.user_input.key == pygame.K_PLUS:
+            cls.display_manager.zoom_level += 1
+
+        elif cls.user_input.key == pygame.K_MINUS:
+            cls.display_manager.zoom_level = (cls.display_manager.zoom_level - 1) or 1
 
         else:
             return False
